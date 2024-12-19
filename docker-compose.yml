@@ -1,0 +1,13 @@
+services:
+  vite:
+    image: node:20-alpine
+    working_dir: /code
+    volumes:
+      - .:/code
+      - vite_deps:/code/node_modules
+    ports:
+      - 5173:5173
+    command: npm run dev -- --host
+
+volumes:
+  vite_deps:
