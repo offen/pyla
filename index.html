@@ -9,10 +9,22 @@
   </head>
   <body>
     <div id="app" class="center" v-cloak>
-      <h1 class="sans-serif f1">
-        {{ name }}
-      </h1>
+      <div v-if="globalError">
+        <p>{{ globalError.message }}</p>
+        <pre>{{globalError.stack}}</pre>
+      </div>
+      <div v-else-if="pyodide">
+        <h1 class="sans-serif f1">
+          Pyla
+        </h1>
+        <textarea class="db"></textarea>
+        <button>Run Script</button>
+      </div>
+      <div v-else>
+        <p>Python runtime is initializing ...</p>
+      </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
