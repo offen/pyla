@@ -1,0 +1,7 @@
+[v-cloak] {
+  display: none;
+}
+
+#app {
+  max-width: 1280px;
+}

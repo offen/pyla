@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite'
-import preact from '@preact/preset-vite'
+import vue from '@vitejs/plugin-vue'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [preact()],
-  base: '/pyla/'
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      vue: 'vue/dist/vue.esm-bundler.js',
+    }
+  }
 })

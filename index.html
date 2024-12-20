@@ -2,12 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/tachyons.min.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
     <title>Pyla</title>
   </head>
   <body>
-    <div id="app" class="center"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div id="app" class="center" v-cloak>
+      <h1 class="sans-serif f1">
+        {{ name }}
+      </h1>
+    </div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
