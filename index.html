@@ -27,7 +27,8 @@
         </label>
         <button @click="run">Run Script</button>
         <div>
-          <pre>{{ output.join('\n') }}</pre>
+          <pre v-if="output.length">{{ output.join('\n') }}</pre>
+          <pre v-else>Output goes here ...</pre>
         </div>
       </div>
       <div v-else>
