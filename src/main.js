@@ -6,7 +6,8 @@ createApp({
       pyodide: null,
       script: '',
       requirements: '',
-      output: ['Output goes here ...']
+      output: ['Output goes here ...'],
+      filesPath: '/home/pyodide/pyla'
     }
   },
   computed: {
@@ -15,13 +16,16 @@ createApp({
         return this.pyodide
       }
       return null
+    },
+    isUsingFilesystem() {
+      return this.script.indexOf('FILES_PATH') !== -1
     }
   },
   async mounted() {
     try {
       const pyodide = await window.loadPyodide({
         env: {
-          'FILES_PATH': '/home/pyodide/pyla'
+          'FILES_PATH': this.filesPath
         }
       })
       this.pyodide = pyodide
@@ -32,6 +36,8 @@ createApp({
   },
   methods: {
     async run () {
+      this.output = []
+
       if (this.requirements.trim()) {
         const requirements = this.requirements.trim().split('\n')
         await this.pyodide.loadPackage('micropip')
@@ -42,16 +48,25 @@ createApp({
               }
             })
       }
-      const dirHandle = await showDirectoryPicker()
-      const permissionStatus = await dirHandle.requestPermission({
-        mode: 'readwrite',
-      })
 
-      if (permissionStatus !== 'granted') {
-        throw new Error('read access to directory not granted')
+      let nativefs
+      if (this.isUsingFilesystem) {
+        const dirHandle = await showDirectoryPicker()
+        const permissionStatus = await dirHandle.requestPermission({
+          mode: 'readwrite',
+        })
+
+        if (permissionStatus !== 'granted') {
+          throw new Error('read access to directory not granted')
+        }
+        nativefs = await this.pyodide.mountNativeFS(this.filesPath, dirHandle)
       }
-      const nativefs = await this.pyodide.mountNativeFS('/home/pyodide/pyla', dirHandle)
+
       await this.pyodide.runPython(this.script)
+
+      if (nativefs) {
+        await nativefs.syncfs()
+      }
     }
   }
 }).mount('#app')
