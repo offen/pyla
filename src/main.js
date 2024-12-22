@@ -8,7 +8,8 @@ createApp({
       requirements: '',
       output: [],
       filesPath: '/home/pyodide/pyla',
-      runtimeError: null
+      runtimeError: null,
+      nativefs: null
     }
   },
   computed: {
@@ -52,8 +53,7 @@ createApp({
               })
         }
 
-        let nativefs
-        if (this.isUsingFilesystem) {
+        if (this.isUsingFilesystem && !this.nativefs) {
           const dirHandle = await showDirectoryPicker()
           const permissionStatus = await dirHandle.requestPermission({
             mode: 'readwrite',
@@ -62,13 +62,13 @@ createApp({
           if (permissionStatus !== 'granted') {
             throw new Error('read access to directory not granted')
           }
-          nativefs = await this.pyodide.mountNativeFS(this.filesPath, dirHandle)
+          this.nativefs = await this.pyodide.mountNativeFS(this.filesPath, dirHandle)
         }
 
         await this.pyodide.runPython(this.script)
 
-        if (nativefs) {
-          await nativefs.syncfs()
+        if (this.nativefs) {
+          await this.nativefs.syncfs()
         }
       } catch (err) {
         this.runtimeError = err
