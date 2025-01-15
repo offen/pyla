@@ -7,9 +7,11 @@ createApp({
       script: '',
       requirements: '',
       output: [],
-      filesPath: '/home/pyodide/pyla',
+      filesInputLocation: '/home/pyodide/pyla/input',
+      filesOutputLocation: '/home/pyodide/pyla/output',
       runtimeError: null,
-      nativefs: null
+      inputFs: null,
+      outputFs: null,
     }
   },
   computed: {
@@ -22,15 +24,23 @@ createApp({
       }
       return null
     },
-    isUsingFilesystem() {
-      return this.script.indexOf('FILES_PATH') !== -1
+    isUsingFilesystemInput() {
+      return this.script.indexOf('FILES_INPUT_LOCATION') !== -1
+    },
+    isUsingFilesystemOutput() {
+      return this.script.indexOf('FILES_OUTPUT_LOCATION') !== -1
+    },
+    isUsingTextInput() {
+      return this.script.indexOf('TEXT_INPUT') !== -1
     }
   },
   async mounted() {
     try {
       const pyodide = await window.loadPyodide({
         env: {
-          'FILES_PATH': this.filesPath
+          'FILES_INPUT_LOCATION': this.filesInputLocation,
+          'FILES_OUTPUT_LOCATION': this.filesOutputLocation,
+          'TEXT_INPUT': this.textInput
         }
       })
       this.pyodide = pyodide
@@ -43,7 +53,11 @@ createApp({
     async run () {
       try {
         if (this.requirements.trim()) {
-          const requirements = this.requirements.trim().split('\n')
+          const requirements = this.requirements
+            .trim()
+            .split('\n')
+            .filter((l) => !l.trim().startsWith('#'))
+
           await this.pyodide.loadPackage('micropip')
               .then(() => this.pyodide.pyimport('micropip'))
               .then(async micropip => {
@@ -53,22 +67,39 @@ createApp({
               })
         }
 
-        if (this.isUsingFilesystem && !this.nativefs) {
+        if (this.isUsingFilesystemInput && !this.inputFs) {
+          const dirHandle = await showDirectoryPicker()
+          const permissionStatus = await dirHandle.requestPermission({
+            mode: 'read',
+          })
+
+          if (permissionStatus !== 'granted') {
+            throw new Error('read access to directory not granted')
+          }
+          this.inputFs = await this.pyodide.mountNativeFS(this.filesInputLocation, dirHandle)
+        }
+
+        if (this.isUsingFilesystemOutput && !this.outputFs) {
           const dirHandle = await showDirectoryPicker()
           const permissionStatus = await dirHandle.requestPermission({
             mode: 'readwrite',
           })
 
           if (permissionStatus !== 'granted') {
-            throw new Error('read access to directory not granted')
+            throw new Error('read/write access to directory not granted')
           }
-          this.nativefs = await this.pyodide.mountNativeFS(this.filesPath, dirHandle)
+          this.outputFs = await this.pyodide.mountNativeFS(this.filesOutputLocation, dirHandle)
+        }
+
+        let textInput = null
+        if (this.isUsingTextInput) {
+          textInput = prompt('Provide text input here')
         }
 
         await this.pyodide.runPython(this.script)
 
-        if (this.nativefs) {
-          await this.nativefs.syncfs()
+        if (this.outputFs) {
+          await this.outputFs.syncfs()
         }
       } catch (err) {
         this.runtimeError = err
