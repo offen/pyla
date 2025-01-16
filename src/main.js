@@ -40,7 +40,6 @@ createApp({
         env: {
           'FILES_INPUT_LOCATION': this.filesInputLocation,
           'FILES_OUTPUT_LOCATION': this.filesOutputLocation,
-          'TEXT_INPUT': this.textInput
         }
       })
       this.pyodide = pyodide
@@ -91,9 +90,12 @@ createApp({
           this.outputFs = await this.pyodide.mountNativeFS(this.filesOutputLocation, dirHandle)
         }
 
-        let textInput = null
         if (this.isUsingTextInput) {
-          textInput = prompt('Provide text input here')
+          const textInput = prompt('Provide text input here')
+          await this.pyodide.runPython(`
+            import os
+            os.environ['TEXT_INPUT'] = '${this.textInput}'
+          `)
         }
 
         await this.pyodide.runPython(this.script)
