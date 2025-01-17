@@ -94,7 +94,7 @@ createApp({
           const textInput = prompt('Provide text input here')
           await this.pyodide.runPython(`
             import os
-            os.environ['TEXT_INPUT'] = '${this.textInput}'
+            os.environ['TEXT_INPUT'] = '${textInput}'
           `)
         }
 
