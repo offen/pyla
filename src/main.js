@@ -76,6 +76,8 @@ createApp({
             throw new Error('read access to directory not granted')
           }
           this.inputFs = await this.pyodide.mountNativeFS(this.filesInputLocation, dirHandle)
+        } else {
+          await this.inputFs.syncfs()
         }
 
         if (this.isUsingFilesystemOutput && !this.outputFs) {
@@ -88,6 +90,8 @@ createApp({
             throw new Error('read/write access to directory not granted')
           }
           this.outputFs = await this.pyodide.mountNativeFS(this.filesOutputLocation, dirHandle)
+        } else {
+          await this.outputFs.syncfs()
         }
 
         if (this.isUsingTextInput) {
