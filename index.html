@@ -13,23 +13,50 @@
         <p>{{ globalError.message }}</p>
         <pre>{{ globalError.stack }}</pre>
       </div>
-      <div v-else-if="pyodide">
-        <h1 class="sans-serif f1">
-          Pyla
-        </h1>
-        <label>
-          Script
-          <textarea class="db" v-model="script"></textarea>
-        </label>
-        <label>
-          Requirements
-          <textarea class="db" v-model="requirements"></textarea>
-        </label>
-        <button @click="run">Run Script</button>
-        <div>
-          <pre v-if="output.length">{{ output.join('\n') }}</pre>
-          <pre v-else>Output goes here ...</pre>
-        </div>
+      <div v-else-if="pyodide" id="container">
+        <splitpanes horizontal class="default-theme">
+          <pane max-size="20">
+            <h1 class="sans-serif f1 ml4">
+              Pyla
+            </h1>
+          </pane>
+          <pane>
+            <splitpanes>
+              <pane max-size="25">
+                File Tree goes here ...
+              </pane>
+              <pane>
+                <splitpanes horizontal>
+                  <pane>
+                    <splitpanes>
+                      <pane>
+                        <label>
+                          Script
+                          <textarea class="db w-100 h-100" v-model="script"></textarea>
+                        </label>
+                      </pane>
+                      <pane>
+                        <label>
+                          Requirements
+                          <textarea class="db w-100 h-100" v-model="requirements"></textarea>
+                        </label>
+                      </pane>
+                    </splitpanes>
+                  </pane>
+                  <pane max-size="42">
+                    <div>
+                      <button @click="run">Run Script</button>
+                    </div>
+                    <div>
+                      <pre v-if="output.length">{{ output.join('\n') }}</pre>
+                      <pre v-else>Output goes here ...</pre>
+                    </div>
+                  </pane>
+                </splitpanes>
+              </pane>
+            </splitpanes>
+          </pane>
+        </splitpanes>
       </div>
       <div v-else>
         <p>Python runtime is initializing ...</p>

@@ -1,6 +1,9 @@
 import { createApp } from 'vue'
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
 
 createApp({
+  components: { Splitpanes, Pane },
   data() {
     return {
       pyodide: null,
