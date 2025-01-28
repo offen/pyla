@@ -9,58 +9,7 @@
   </head>
   <body>
     <div id="app" class="center" v-cloak>
-      <div v-if="globalError">
-        <p>{{ globalError.message }}</p>
-        <pre>{{ globalError.stack }}</pre>
-      </div>
-      <div v-else-if="pyodide" id="container">
-        <splitpanes horizontal class="default-theme">
-          <pane max-size="20">
-            <h1 class="sans-serif f1 ml4">
-              Pyla
-            </h1>
-          </pane>
-          <pane>
-            <splitpanes>
-              <pane max-size="25">
-                File Tree goes here ...
-              </pane>
-              <pane>
-                <splitpanes horizontal>
-                  <pane>
-                    <splitpanes>
-                      <pane>
-                        <label>
-                          Script
-                          <textarea class="db w-100 h-100" v-model="script"></textarea>
-                        </label>
-                      </pane>
-                      <pane>
-                        <label>
-                          Requirements
-                          <textarea class="db w-100 h-100" v-model="requirements"></textarea>
-                        </label>
-                      </pane>
-                    </splitpanes>
-                  </pane>
-                  <pane max-size="42">
-                    <div>
-                      <button @click="run">Run Script</button>
-                    </div>
-                    <div>
-                      <pre v-if="output.length">{{ output.join('\n') }}</pre>
-                      <pre v-else>Output goes here ...</pre>
-                    </div>
-                  </pane>
-                </splitpanes>
-              </pane>
-            </splitpanes>
-          </pane>
-        </splitpanes>
-      </div>
-      <div v-else>
-        <p>Python runtime is initializing ...</p>
-      </div>
+      <app />
     </div>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
     <script type="module" src="/src/main.js"></script>
