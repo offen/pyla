@@ -10,7 +10,7 @@ export default {
       script: '',
       requirements: '',
       output: [],
-      workspace: '/home/pyodide/pyla',
+      workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
       runtimeError: null
     }
@@ -84,7 +84,6 @@ export default {
             os.environ['TEXT_INPUT'] = '${textInput}'
           `)
         }
-
         await this.pyodide.runPython(this.script)
 
         if (this.workspaceFs) {
