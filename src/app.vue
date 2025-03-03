@@ -10,11 +10,9 @@ export default {
       script: '',
       requirements: '',
       output: [],
-      filesInputLocation: '/home/pyodide/pyla/input',
-      filesOutputLocation: '/home/pyodide/pyla/output',
-      runtimeError: null,
-      inputFs: null,
-      outputFs: null,
+      workspace: '/home/pyodide/pyla',
+      workspaceFs: null,
+      runtimeError: null
     }
   },
   computed: {
@@ -27,11 +25,8 @@ export default {
       }
       return null
     },
-    isUsingFilesystemInput() {
-      return this.script.indexOf('FILES_INPUT_LOCATION') !== -1
-    },
-    isUsingFilesystemOutput() {
-      return this.script.indexOf('FILES_OUTPUT_LOCATION') !== -1
+    isUsingWorkspace() {
+      return this.script.indexOf('WORKSPACE_LOCATION') !== -1
     },
     isUsingTextInput() {
       return this.script.indexOf('TEXT_INPUT') !== -1
@@ -41,8 +36,7 @@ export default {
     try {
       const pyodide = await window.loadPyodide({
         env: {
-          'FILES_INPUT_LOCATION': this.filesInputLocation,
-          'FILES_OUTPUT_LOCATION': this.filesOutputLocation,
+          'WORKSPACE_LOCATION': this.workspaceLocation,
         }
       })
       this.pyodide = pyodide
@@ -69,21 +63,7 @@ export default {
               })
         }
 
-        if (this.isUsingFilesystemInput && !this.inputFs) {
-          const dirHandle = await showDirectoryPicker()
-          const permissionStatus = await dirHandle.requestPermission({
-            mode: 'read',
-          })
-
-          if (permissionStatus !== 'granted') {
-            throw new Error('read access to directory not granted')
-          }
-          this.inputFs = await this.pyodide.mountNativeFS(this.filesInputLocation, dirHandle)
-        } else if (this.inputFs) {
-          await this.inputFs.syncfs()
-        }
-
-        if (this.isUsingFilesystemOutput && !this.outputFs) {
+        if (this.isUsingWorkspace && !this.workspaceFs) {
           const dirHandle = await showDirectoryPicker()
           const permissionStatus = await dirHandle.requestPermission({
             mode: 'readwrite',
@@ -92,9 +72,9 @@ export default {
           if (permissionStatus !== 'granted') {
             throw new Error('read/write access to directory not granted')
           }
-          this.outputFs = await this.pyodide.mountNativeFS(this.filesOutputLocation, dirHandle)
-        } else if (this.outputFs) {
-          await this.outputFs.syncfs()
+          this.workspaceFs = await this.pyodide.mountNativeFS(this.workspaceLocation, dirHandle)
+        } else if (this.workspaceFs) {
+          await this.workspaceFs.syncfs()
         }
 
         if (this.isUsingTextInput) {
@@ -107,8 +87,8 @@ export default {
 
         await this.pyodide.runPython(this.script)
 
-        if (this.outputFs) {
-          await this.outputFs.syncfs()
+        if (this.workspaceFs) {
+          await this.workspaceFs.syncfs()
         }
       } catch (err) {
         this.runtimeError = err
@@ -131,40 +111,35 @@ export default {
         </h1>
       </pane>
       <pane>
-        <splitpanes>
-          <pane max-size="25">
-            File Tree goes here ...
-          </pane>
-          <pane>
-            <splitpanes horizontal>
-              <pane>
-                <splitpanes>
-                  <pane>
-                    <label>
-                      Script
-                      <textarea class="db w-100 h-100" v-model="script"></textarea>
-                    </label>
-                  </pane>
-                  <pane>
-                    <label>
-                      Requirements
-                      <textarea class="db w-100 h-100" v-model="requirements"></textarea>
-                    </label>
-                  </pane>
-                </splitpanes>
-              </pane>
-              <pane max-size="42">
-                <div>
-                  <button @click="run">Run Script</button>
-                </div>
-                <div>
-                  <pre v-if="output.length">{{ output.join('\n') }}</pre>
-                  <pre v-else>Output goes here ...</pre>
-                </div>
-              </pane>
-            </splitpanes>
-          </pane>
-        </splitpanes>
+        <pane>
+          <splitpanes horizontal>
+            <pane>
+              <splitpanes>
+                <pane>
+                  <label>
+                    Script
+                    <textarea class="db w-100 h-100" v-model="script"></textarea>
+                  </label>
+                </pane>
+                <pane>
+                  <label>
+                    Requirements
+                    <textarea class="db w-100 h-100" v-model="requirements"></textarea>
+                  </label>
+                </pane>
+              </splitpanes>
+            </pane>
+            <pane max-size="42">
+              <div>
+                <button @click="run">Run Script</button>
+              </div>
+              <div>
+                <pre v-if="output.length">{{ output.join('\n') }}</pre>
+                <pre v-else>Output goes here ...</pre>
+              </div>
+            </pane>
+          </splitpanes>
+        </pane>
       </pane>
     </splitpanes>
   </div>
