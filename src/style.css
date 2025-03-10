@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 [v-cloak] {
   display: none;
 }
@@ -9,3 +11,4 @@
 html, body, #app, #container {
   height: 100%;
 }
+

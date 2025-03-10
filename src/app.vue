@@ -105,7 +105,7 @@ export default {
   <div v-else-if="pyodide" id="container">
     <splitpanes horizontal class="default-theme">
       <pane max-size="20">
-        <h1 class="sans-serif f1 ml4">
+        <h1>
           Pyla
         </h1>
       </pane>
@@ -117,13 +117,13 @@ export default {
                 <pane>
                   <label>
                     Script
-                    <textarea class="db w-100 h-100" v-model="script"></textarea>
+                    <textarea v-model="script"></textarea>
                   </label>
                 </pane>
                 <pane>
                   <label>
                     Requirements
-                    <textarea class="db w-100 h-100" v-model="requirements"></textarea>
+                    <textarea v-model="requirements"></textarea>
                   </label>
                 </pane>
               </splitpanes>
