@@ -103,7 +103,7 @@ export default {
     <pre>{{ globalError.stack }}</pre>
   </div>
   <div v-else-if="pyodide" id="container">
-    <splitpanes horizontal class="default-theme">
+    <splitpanes horizontal>
       <pane max-size="20">
         <h1>
           Pyla
@@ -117,20 +117,20 @@ export default {
                 <pane>
                   <label>
                     Script
-                    <textarea v-model="script"></textarea>
+                    <textarea class="block border-1" v-model="script"></textarea>
                   </label>
                 </pane>
                 <pane>
                   <label>
                     Requirements
-                    <textarea v-model="requirements"></textarea>
+                    <textarea class="block border-1" v-model="requirements"></textarea>
                   </label>
                 </pane>
               </splitpanes>
             </pane>
             <pane max-size="42">
               <div>
-                <button @click="run">Run Script</button>
+                <button class="border-1 p-2 cursor-pointer" @click="run">Run Script</button>
               </div>
               <div>
                 <pre v-if="output.length">{{ output.join('\n') }}</pre>
