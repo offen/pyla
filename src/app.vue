@@ -105,45 +105,37 @@ export default {
     <p>{{ globalError.message }}</p>
     <pre>{{ globalError.stack }}</pre>
   </div>
-  <div v-else-if="pyodide" id="container">
-    <splitpanes horizontal>
-      <pane max-size="20">
-        <h1>
-          Pyla
-        </h1>
-      </pane>
-      <pane>
-        <pane>
-          <splitpanes horizontal>
-            <pane>
-              <splitpanes>
-                <pane>
-                  <label>
-                    Script
-                    <textarea class="block border-1" v-model="script"></textarea>
-                  </label>
-                </pane>
-                <pane>
-                  <label>
-                    Requirements
-                    <textarea class="block border-1" v-model="requirements"></textarea>
-                  </label>
-                </pane>
-              </splitpanes>
-            </pane>
-            <pane max-size="42">
-              <div>
-                <button class="border-1 p-2 cursor-pointer" @click="run">Run Script</button>
-              </div>
-              <div>
-                <pre v-if="output.length">{{ output.join('\n') }}</pre>
-                <pre v-else>Output goes here ...</pre>
-              </div>
-            </pane>
-          </splitpanes>
-        </pane>
-      </pane>
-    </splitpanes>
+  <div v-else-if="pyodide" id="container" class="max-w-256 m-auto">
+    <div class="grid mb-8">
+      <h1>
+        Pyla
+      </h1>
+    </div>
+    <div class="grid grid-cols-2 mb-8">
+      <div>
+        <label>
+          Script
+          <textarea class="block border-1" v-model="script"></textarea>
+        </label>
+      </div>
+      <div>
+        <label>
+          Requirements
+          <textarea class="block border-1" v-model="requirements"></textarea>
+        </label>
+      </div>
+    </div>
+    <div class="grid mb-8">
+      <div>
+        <button class="border-1 p-2 cursor-pointer" @click="run">Run Script</button>
+      </div>
+    </div>
+    <div class="grid mb-8">
+      <div>
+        <pre v-if="output.length">{{ output.join('\n') }}</pre>
+        <pre v-else>Output goes here ...</pre>
+      </div>
+    </div>
   </div>
   <div v-else>
     <p>Python runtime is initializing ...</p>
