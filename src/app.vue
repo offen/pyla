@@ -40,7 +40,10 @@ export default {
         }
       })
       this.pyodide = pyodide
+
+      this.pyodide.setStdin({ error: true })
       this.pyodide.setStdout({ batched: (msg) => this.output.push(msg) })
+      this.pyodide.setStderr({ batched: (msg) => this.output.push(msg) })
     } catch (err) {
       this.pyodide = err
     }
