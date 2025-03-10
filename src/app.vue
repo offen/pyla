@@ -1,9 +1,7 @@
 <script>
-import { Splitpanes, Pane } from 'splitpanes'
-import 'splitpanes/dist/splitpanes.css'
 
 export default {
-  components: { Splitpanes, Pane },
+  components: {},
   data() {
     return {
       pyodide: null,
