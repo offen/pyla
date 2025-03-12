@@ -1,7 +1,9 @@
 <script>
 
+import Button from './components/button.vue'
+
 export default {
-  components: {},
+  components: { Button },
   data() {
     return {
       pyodide: null,
@@ -122,7 +124,9 @@ export default {
     </div>
     <div class="grid mb-8">
       <div>
-        <button class="border-1 p-2 cursor-pointer" @click="run">Run Script</button>
+        <Button @click="run">
+          Run Script
+        </Button>
       </div>
     </div>
     <div class="grid mb-8">
