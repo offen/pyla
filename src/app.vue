@@ -85,13 +85,14 @@ export default {
             os.environ['TEXT_INPUT'] = '${textInput}'
           `)
         }
+        this.output = []
         await this.pyodide.runPython(this.script)
 
         if (this.workspaceFs) {
           await this.workspaceFs.syncfs()
         }
       } catch (err) {
-        this.runtimeError = err
+        this.output.push(err.message)
       }
     }
   }
@@ -99,11 +100,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="globalError">
-    <p>{{ globalError.message }}</p>
-    <pre>{{ globalError.stack }}</pre>
-  </div>
-  <div v-else-if="pyodide" id="container" class="max-w-256 m-auto">
+  <div v-if="pyodide" id="container" class="max-w-256 m-auto">
     <div class="grid mb-8">
       <h1>
         Pyla
