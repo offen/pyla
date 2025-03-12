@@ -39,13 +39,12 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Minio Deploy
+        uses: hkdobrev/minio-deploy-action@v1
         with:
-          # Upload dist folder
-          path: './dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          endpoint: ${{ secrets.MINIO_ENDPOINT }}
+          access_key: ${{ secrets.MINIO_ACCESS_KEY }}
+          secret_key: ${{ secrets.MINIO_SECRET_KEY }}
+          bucket: 'pyla'
+          source_dir: 'dist'
+          target_dir: '/'
