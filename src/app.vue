@@ -7,7 +7,17 @@ import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 export default {
   components: { Button },
   data() {
-    return {
+    const urlState = {}
+    try {
+      const urlData = JSON.parse(window.atob(window.location.hash.replace(/^#/, '')))
+      for (const key of ['script', 'requirements', 'prompt']) {
+        if (typeof urlData[key] === 'string') {
+          urlState[key] = urlData[key]
+        }
+      }
+    } catch {}
+
+    return Object.assign({
       pyodide: null,
       script: '',
       requirements: '',
@@ -16,7 +26,7 @@ export default {
       workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
       runtimeError: null
-    }
+    }, urlState)
   },
   computed: {
     augmentedPrompt() {
@@ -55,10 +65,18 @@ export default {
     }
   },
   methods: {
-    async copyPrompt () {
+    saveURL() {
+      const state = JSON.stringify({
+        prompt: this.prompt,
+        code: this.code,
+        requirements: this.requirements
+      })
+      window.location.hash = window.btoa(state)
+    },
+    async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
-    async run () {
+    async run() {
       try {
         if (this.requirements.trim()) {
           const requirements = this.requirements
@@ -147,6 +165,13 @@ export default {
       <div>
         <Button @click="run">
           Run Script
+        </Button>
+      </div>
+    </div>
+    <div class="grid mb-8">
+      <div>
+        <Button @click="saveURL">
+          Save URL
         </Button>
       </div>
     </div>
