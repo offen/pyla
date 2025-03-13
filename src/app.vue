@@ -2,6 +2,8 @@
 
 import Button from './components/button.vue'
 
+import systemPrompt from './../SYSTEM_PROMPT.md?raw'
+
 export default {
   components: { Button },
   data() {
@@ -9,6 +11,7 @@ export default {
       pyodide: null,
       script: '',
       requirements: '',
+      prompt: '',
       output: [],
       workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
@@ -16,6 +19,9 @@ export default {
     }
   },
   computed: {
+    augmentedPrompt() {
+      return systemPrompt + '\n' + this.prompt + '\n'
+    },
     globalError() {
       if (this.pyodide instanceof Error) {
         return this.pyodide
@@ -49,6 +55,9 @@ export default {
     }
   },
   methods: {
+    async copyPrompt () {
+      await navigator.clipboard.writeText(this.augmentedPrompt)
+    },
     async run () {
       try {
         if (this.requirements.trim()) {
@@ -107,6 +116,18 @@ export default {
       <h1>
         Pyla
       </h1>
+    </div>
+    <div class="grid mb-8">
+      <label>
+        Prompt
+        <textarea class="block border-1" v-model="prompt"></textarea>
+        <textarea disabled class="block border-1" :value="augmentedPrompt"></textarea>
+      </label>
+      <div>
+        <Button @click="copyPrompt">
+          Copy augmented prompt
+        </Button>
+      </div>
     </div>
     <div class="grid grid-cols-2 mb-8">
       <div>
