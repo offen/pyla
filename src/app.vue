@@ -1,11 +1,11 @@
 <script>
 
 import Button from './components/button.vue'
-
+import TextArea from './components/textarea.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 
 export default {
-  components: { Button },
+  components: { Button, TextArea },
   data() {
     const urlState = {}
     try {
@@ -136,11 +136,14 @@ export default {
       </h1>
     </div>
     <div class="grid mb-8">
-      <label>
-        Prompt
-        <textarea class="block border-1" v-model="prompt"></textarea>
-        <textarea disabled class="block border-1" :value="augmentedPrompt"></textarea>
-      </label>
+      <TextArea
+        label="Prompt"
+        v-model="prompt"
+      />
+      <TextArea
+        v-model="augmentedPrompt"
+        readonly
+      />
       <div>
         <Button @click="copyPrompt">
           Copy augmented prompt
@@ -149,16 +152,16 @@ export default {
     </div>
     <div class="grid grid-cols-2 mb-8">
       <div>
-        <label>
-          Script
-          <textarea class="block border-1" v-model="script"></textarea>
-        </label>
+        <TextArea
+          label="Script"
+          v-model="script"
+        />
       </div>
       <div>
-        <label>
-          Requirements
-          <textarea class="block border-1" v-model="requirements"></textarea>
-        </label>
+        <TextArea
+          label="Requirements"
+          v-model="requirements"
+        />
       </div>
     </div>
     <div class="grid mb-8">
