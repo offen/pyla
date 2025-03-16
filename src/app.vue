@@ -25,6 +25,7 @@ export default {
       output: [],
       workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
+      dirHandle: null,
       runtimeError: null
     }, urlState)
   },
@@ -46,6 +47,9 @@ export default {
     },
     isUsingTextInput() {
       return this.script.indexOf('TEXT_INPUT') !== -1
+    },
+    localWorkspacePath() {
+      return this.dirHandle ? this.dirHandle.name : null
     }
   },
   async mounted() {
@@ -98,10 +102,10 @@ export default {
           const permissionStatus = await dirHandle.requestPermission({
             mode: 'readwrite',
           })
-
           if (permissionStatus !== 'granted') {
             throw new Error('read/write access to directory not granted')
           }
+          this.dirHandle = dirHandle
           this.workspaceFs = await this.pyodide.mountNativeFS(this.workspaceLocation, dirHandle)
         } else if (this.workspaceFs) {
           await this.workspaceFs.syncfs()
@@ -134,6 +138,7 @@ export default {
       <h1>
         Pyla
       </h1>
+      <p>Workspace Location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
     <div class="grid mb-8">
       <TextArea
