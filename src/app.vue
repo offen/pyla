@@ -166,10 +166,10 @@ export default {
       />
     </div>
 
-    <div class="col-start-6 col-span-2">
-        <Button @click="copyPrompt">
-          Copy augmented prompt
-        </Button>
+    <div class="col-start-6 col-span-2 flex justify-end">
+      <Button @click="copyPrompt" class="w-full rounded-lg bg-stone-950 text-white px-4 py-2">
+        Copy augmented prompt
+      </Button>
     </div>
 
     <div class="col-start-1 col-span-8">
