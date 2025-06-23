@@ -135,64 +135,78 @@ export default {
 </script>
 
 <template>
-  <div v-if="pyodide" id="container" class="max-w-256 m-auto">
-    <div class="grid mb-8">
+
+  <div v-if="pyodide" id="container" class="max-w-1024 grid grid-cols-8 gap-4">
+
+    <div class="col-span-2">
       <h1>
         Pyla
       </h1>
+    </div>
+
+    <div class="col-span-5">
       <p>Workspace Location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
-    <div class="grid mb-8">
+
+    <div class="">
+      <p>?</p>
+    </div>
+
+    <div class="col-start-2 col-span-6">
       <TextArea
         label="Prompt"
         v-model="prompt"
       />
+    </div>
+    
+    <div class="col-start-2 col-span-6">
       <TextArea
         v-model="augmentedPrompt"
         readonly
       />
-      <div>
+    </div>
+
+    <div class="col-start-6 col-span-2">
         <Button @click="copyPrompt">
           Copy augmented prompt
         </Button>
-      </div>
     </div>
-    <div class="grid grid-cols-2 mb-8">
-      <div>
-        <TextArea
-          label="Script"
-          v-model="script"
-        />
-      </div>
-      <div>
-        <TextArea
-          label="Requirements"
-          v-model="requirements"
-        />
-      </div>
+
+    <div class="col-start-1 col-span-8">
+      <TextArea
+        label="Script"
+        v-model="script"
+      />
     </div>
-    <div class="grid mb-8">
-      <div>
+
+    <div class="col-start-1 col-span-3">
+      <TextArea
+        label="Requirements"
+        v-model="requirements"
+      />
+    </div>
+
+    <div class="col-start-7 col-span-2">
+      <div class="flex flex-col">
         <Button @click="run">
           Run Script
         </Button>
-      </div>
-    </div>
-    <div class="grid mb-8">
-      <div>
+
         <Button @click="saveURL">
           Save URL
         </Button>
       </div>
     </div>
-    <div class="grid mb-8">
-      <div>
+
+    <div class="col-start-1 col-span-8">
         <pre v-if="output.length">{{ output.join('\n') }}</pre>
         <pre v-else>Output goes here ...</pre>
-      </div>
     </div>
+
   </div>
+
   <div v-else>
     <p>Python runtime is initializing ...</p>
   </div>
+
 </template>
