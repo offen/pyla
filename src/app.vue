@@ -1,11 +1,12 @@
 <script>
 
 import Button from './components/button.vue'
-import TextArea from './components/textarea.vue'
+import TextAreaLight from './components/textarealight.vue'
+import TextAreaDark from './components/textareadark.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 
 export default {
-  components: { Button, TextArea },
+  components: { Button, TextAreaLight, TextAreaDark },
   data() {
     const urlState = {}
     try {
@@ -136,7 +137,7 @@ export default {
 
 <template>
 
-  <div v-if="pyodide" id="container" class="max-w-1024 grid grid-cols-8 gap-4">
+  <div v-if="pyodide" id="container" class="max-w-1024 grid grid-cols-8 gap-3">
 
     <div class="col-span-2">
       <h1>
@@ -153,34 +154,34 @@ export default {
     </div>
 
     <div class="col-start-2 col-span-6">
-      <TextArea
+      <TextAreaLight
         label="Prompt"
         v-model="prompt"
       />
     </div>
     
     <div class="col-start-2 col-span-6">
-      <TextArea
+      <TextAreaLight
         v-model="augmentedPrompt"
         readonly
       />
     </div>
 
     <div class="col-start-6 col-span-2 flex justify-end">
-      <Button @click="copyPrompt" class="w-full rounded-lg bg-stone-950 text-white px-4 py-2">
+      <Button @click="copyPrompt">
         Copy augmented prompt
       </Button>
     </div>
 
     <div class="col-start-1 col-span-8">
-      <TextArea
+      <TextAreaDark
         label="Script"
         v-model="script"
       />
     </div>
 
     <div class="col-start-1 col-span-3">
-      <TextArea
+      <TextAreaDark
         label="Requirements"
         v-model="requirements"
       />
