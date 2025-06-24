@@ -139,57 +139,59 @@ export default {
 
 <template>
 
-  <div v-if="pyodide" id="container" class="max-w-1024 grid grid-cols-8 gap-3">
+  <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
 
-    <div class="col-span-2 font-semibold text-2xl">
+    <div class="order-1 col-span-1 md:col-span-2 lg:col-span-2 self-center font-semibold text-2xl">
       <h1>
         Pyla
       </h1>
     </div>
 
-    <div class="col-span-5 text-neutral-500">
+    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
       <p>Workspace Location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
 
-    <div class="text-neutral-500">
-      <p>?</p>
+    <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
+      <p>
+        ?
+      </p>
     </div>
 
-    <div class="col-start-2 col-span-6">
+    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <TextAreaLightInput
         label="Prompt"
         v-model="prompt"
       />
     </div>
     
-    <div class="col-start-2 col-span-6">
+    <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <TextAreaLight
         v-model="augmentedPrompt"
         readonly
       />
     </div>
 
-    <div class="col-start-5 col-span-3 flex justify-end">
+    <div class="order-6 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
       <ButtonMain @click="copyPrompt">
         Copy augmented prompt
       </ButtonMain>
     </div>
 
-    <div class="col-start-1 col-span-8">
+    <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8">
       <TextAreaDark
         label="Script"
         v-model="script"
       />
     </div>
 
-    <div class="col-start-1 col-span-3">
+    <div class="order-8 col-span-2 md:col-span-2 lg:col-span-3">
       <TextAreaDark
         label="Requirements"
         v-model="requirements"
       />
     </div>
 
-    <div class="col-start-6 col-span-3 flex justify-end">
+    <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
       <div class="flex flex-col">
         <ButtonMain @click="run">
           Run Script
@@ -201,14 +203,14 @@ export default {
       </div>
     </div>
 
-    <div class="col-start-1 col-span-8 rounded-lg p-4 font-semibold bg-neutral-50">
+    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 rounded-lg p-4 font-semibold bg-neutral-50">
         <pre v-if="output.length">{{ output.join('\n') }}</pre>
         <pre v-else>Output goes here ...</pre>
     </div>
 
   </div>
 
-  <div v-else class="text-neutral-500">
+  <div v-else class="order-11 col-span-2 md:col-span-4 lg:col-span-8 text-neutral-500">
     <p>Python runtime is initializing ...</p>
   </div>
 

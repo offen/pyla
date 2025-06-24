@@ -15,7 +15,7 @@ const handleClick = () => {
     :class="[
       clicked ? 'text-neutral-950' : 'text-white',
       clicked ? 'bg-transparent' : 'bg-neutral-950',
-      clicked ? 'outline-3' : 'outline-0',
+      'outline-3',
       'font-semibold',
       'outline-neutral-950',
       'w-64',
