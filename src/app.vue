@@ -148,7 +148,7 @@ export default {
     </div>
 
     <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
-      <p>Workspace Location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
+      <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
 
     <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
@@ -180,7 +180,8 @@ export default {
 
     <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
       <TextAreaDark
-        label="Script"
+        label="Code"
+        placeholder="Paste code from LLM ..."
         v-model="script"
       />
     </div>
@@ -188,6 +189,7 @@ export default {
     <div class="order-8 col-span-2 md:col-span-2 lg:col-span-3">
       <TextAreaDark
         label="Requirements"
+        placeholder="Paste requirements from LLM ..."
         v-model="requirements"
       />
     </div>
@@ -195,18 +197,18 @@ export default {
     <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
       <div class="flex flex-col self-end">
         <ButtonMain @click="run" class="mb-4">
-          Run Script
+          Run code
         </ButtonMain>
 
         <ButtonSub @click="saveURL">
-          Save URL
+          Generate code URL
         </ButtonSub>
       </div>
     </div>
 
-    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 rounded-lg p-4 font-semibold bg-neutral-50 mt-10">
-        <pre v-if="output.length">{{ output.join('\n') }}</pre>
-        <pre v-else>Output goes here ...</pre>
+    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 rounded-lg p-3 bg-neutral-50 mt-10">
+        <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
+        <pre v-else class="font-mono">Output goes here ...</pre>
     </div>
 
   </div>
