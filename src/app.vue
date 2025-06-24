@@ -1,12 +1,14 @@
 <script>
 
-import Button from './components/button.vue'
+import ButtonMain from './components/buttonmain.vue'
+import ButtonSub from './components/buttonsub.vue'
+import TextAreaLightInput from './components/textarealightinput.vue'
 import TextAreaLight from './components/textarealight.vue'
 import TextAreaDark from './components/textareadark.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 
 export default {
-  components: { Button, TextAreaLight, TextAreaDark },
+  components: { ButtonMain, ButtonSub, TextAreaLightInput, TextAreaLight, TextAreaDark },
   data() {
     const urlState = {}
     try {
@@ -139,22 +141,22 @@ export default {
 
   <div v-if="pyodide" id="container" class="max-w-1024 grid grid-cols-8 gap-3">
 
-    <div class="col-span-2">
+    <div class="col-span-2 font-semibold text-2xl">
       <h1>
         Pyla
       </h1>
     </div>
 
-    <div class="col-span-5">
+    <div class="col-span-5 text-neutral-500">
       <p>Workspace Location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
 
-    <div class="">
+    <div class="text-neutral-500">
       <p>?</p>
     </div>
 
     <div class="col-start-2 col-span-6">
-      <TextAreaLight
+      <TextAreaLightInput
         label="Prompt"
         v-model="prompt"
       />
@@ -167,10 +169,10 @@ export default {
       />
     </div>
 
-    <div class="col-start-6 col-span-2 flex justify-end">
-      <Button @click="copyPrompt">
+    <div class="col-start-5 col-span-3 flex justify-end">
+      <ButtonMain @click="copyPrompt">
         Copy augmented prompt
-      </Button>
+      </ButtonMain>
     </div>
 
     <div class="col-start-1 col-span-8">
@@ -187,26 +189,26 @@ export default {
       />
     </div>
 
-    <div class="col-start-7 col-span-2">
+    <div class="col-start-6 col-span-3 flex justify-end">
       <div class="flex flex-col">
-        <Button @click="run">
+        <ButtonMain @click="run">
           Run Script
-        </Button>
+        </ButtonMain>
 
-        <Button @click="saveURL">
+        <ButtonSub @click="saveURL">
           Save URL
-        </Button>
+        </ButtonSub>
       </div>
     </div>
 
-    <div class="col-start-1 col-span-8">
+    <div class="col-start-1 col-span-8 rounded-lg p-4 font-semibold bg-neutral-50">
         <pre v-if="output.length">{{ output.join('\n') }}</pre>
         <pre v-else>Output goes here ...</pre>
     </div>
 
   </div>
 
-  <div v-else>
+  <div v-else class="text-neutral-500">
     <p>Python runtime is initializing ...</p>
   </div>
 
