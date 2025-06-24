@@ -139,7 +139,7 @@ export default {
 
 <template>
 
-  <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+  <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
 
     <div class="order-1 col-span-1 md:col-span-2 lg:col-span-2 self-center font-semibold text-2xl">
       <h1>
@@ -157,15 +157,16 @@ export default {
       </p>
     </div>
 
-    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
       <TextAreaLightInput
-        label="Prompt"
+        placeholder="What do you want to do?"
         v-model="prompt"
       />
     </div>
     
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <TextAreaLight
+        label="Augmented prompt"
         v-model="augmentedPrompt"
         readonly
       />
@@ -177,7 +178,7 @@ export default {
       </ButtonMain>
     </div>
 
-    <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8">
+    <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
       <TextAreaDark
         label="Script"
         v-model="script"
@@ -192,8 +193,8 @@ export default {
     </div>
 
     <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
-      <div class="flex flex-col">
-        <ButtonMain @click="run">
+      <div class="flex flex-col self-end">
+        <ButtonMain @click="run" class="mb-4">
           Run Script
         </ButtonMain>
 
@@ -203,7 +204,7 @@ export default {
       </div>
     </div>
 
-    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 rounded-lg p-4 font-semibold bg-neutral-50">
+    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 rounded-lg p-4 font-semibold bg-neutral-50 mt-10">
         <pre v-if="output.length">{{ output.join('\n') }}</pre>
         <pre v-else>Output goes here ...</pre>
     </div>
