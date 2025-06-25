@@ -75,7 +75,7 @@ export default {
     saveURL() {
       const state = JSON.stringify({
         prompt: this.prompt,
-        code: this.code,
+        script: this.script,
         requirements: this.requirements
       })
       window.location.hash = window.btoa(state)
