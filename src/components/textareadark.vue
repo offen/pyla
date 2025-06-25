@@ -4,12 +4,12 @@ const { label, placeholder, rows = 4} = defineProps(['label', 'placeholder', 'ro
 </script>
 
 <template>
-  <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+  <label class="block mb-0 font-mono text-sm/5 text-neutral-500">
     {{ label }}
     <textarea
       v-bind="$attrs"
       v-model="model"
-      class="block border-1"
+      class="h-40 block w-full rounded-lg p-3 mt-2 text-base/6 text-neutral-300 bg-neutral-700"
       :rows="rows"
       :placeholder="placeholder"
     ></textarea>

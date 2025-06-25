@@ -13,10 +13,16 @@ const handleClick = () => {
     v-bind="$attrs"
     @click="handleClick"
     :class="[
-      clicked ? 'border-2' : 'border-1',
-      'p-2',
+      'text-neutral-950',
+      'font-semibold',
+      'bg-transparent',
+      'outline-3',
+      'outline-neutral-950',
+      'w-64',
+      'px-4',
+      'py-2',
       'cursor-pointer',
-      'rounded-md'
+      'rounded-lg'
     ]"
   >
     <slot />

@@ -1,11 +1,14 @@
 <script>
 
-import Button from './components/button.vue'
-import TextArea from './components/textarea.vue'
+import ButtonMain from './components/buttonmain.vue'
+import ButtonSub from './components/buttonsub.vue'
+import TextAreaLightInput from './components/textarealightinput.vue'
+import TextAreaLight from './components/textarealight.vue'
+import TextAreaDark from './components/textareadark.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 
 export default {
-  components: { Button, TextArea },
+  components: { ButtonMain, ButtonSub, TextAreaLightInput, TextAreaLight, TextAreaDark },
   data() {
     const urlState = {}
     try {
@@ -135,64 +138,89 @@ export default {
 </script>
 
 <template>
-  <div v-if="pyodide" id="container" class="max-w-256 m-auto">
-    <div class="grid mb-8">
+
+  <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+
+    <div class="order-1 col-span-1 md:col-span-2 lg:col-span-2 self-center font-semibold text-2xl">
       <h1>
         Pyla
       </h1>
-      <p>Workspace Location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
-    <div class="grid mb-8">
-      <TextArea
-        label="Prompt"
+
+    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
+      <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
+    </div>
+
+    <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
+      <p>
+        ?
+      </p>
+    </div>
+
+    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
+      <TextAreaLightInput
+        label="Tool"
+        placeholder="What do you want to do?"
         v-model="prompt"
       />
-      <TextArea
+    </div>
+    
+    <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+      <TextAreaLight
+        label="Augmented prompt"
         v-model="augmentedPrompt"
         readonly
       />
-      <div>
-        <Button @click="copyPrompt">
-          Copy augmented prompt
-        </Button>
+    </div>
+
+    <div class="order-6 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+      <ButtonMain @click="copyPrompt">
+        Copy augmented prompt
+      </ButtonMain>
+    </div>
+
+    <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
+      <TextAreaDark
+        label="Script"
+        placeholder="Paste script from LLM ..."
+        v-model="script"
+      />
+    </div>
+
+    <div class="order-8 col-span-2 md:col-span-2 lg:col-span-3">
+      <TextAreaDark
+        label="Requirements"
+        placeholder="Paste requirements from LLM ..."
+        v-model="requirements"
+      />
+    </div>
+
+    <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
+      <div class="flex flex-col self-end">
+        <ButtonMain @click="run" class="mb-4">
+          Run script
+        </ButtonMain>
+
+        <ButtonSub @click="saveURL">
+          Generate script URL
+        </ButtonSub>
       </div>
     </div>
-    <div class="grid grid-cols-2 mb-8">
-      <div>
-        <TextArea
-          label="Script"
-          v-model="script"
-        />
-      </div>
-      <div>
-        <TextArea
-          label="Requirements"
-          v-model="requirements"
-        />
+
+    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 mt-10 mb-20">
+      <p class="block mb-2 text-sm/5 text-neutral-500">
+          Output
+      </p>
+      <div class="rounded-lg p-3 bg-neutral-50">
+          <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
+          <pre v-else class="font-mono">Output goes here ...</pre>
       </div>
     </div>
-    <div class="grid mb-8">
-      <div>
-        <Button @click="run">
-          Run Script
-        </Button>
-      </div>
-    </div>
-    <div class="grid mb-8">
-      <div>
-        <Button @click="saveURL">
-          Save URL
-        </Button>
-      </div>
-    </div>
-    <div class="grid mb-8">
-      <div>
-        <pre v-if="output.length">{{ output.join('\n') }}</pre>
-        <pre v-else>Output goes here ...</pre>
-      </div>
-    </div>
+
   </div>
-  <div v-else>
+
+  <div v-else class="order-11 col-span-2 md:col-span-4 lg:col-span-8 text-neutral-500">
     <p>Python runtime is initializing ...</p>
   </div>
+
 </template>
