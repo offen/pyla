@@ -198,7 +198,7 @@ export default {
     <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
       <div class="flex flex-col self-end">
         <ButtonMain @click="run" class="mb-4">
-          Run code
+          Run script
         </ButtonMain>
 
         <ButtonSub @click="saveURL">
