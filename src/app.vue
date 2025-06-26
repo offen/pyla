@@ -1,5 +1,7 @@
 <script>
 
+import lz from 'lz-string'
+
 import ButtonMain from './components/buttonmain.vue'
 import ButtonSub from './components/buttonsub.vue'
 import TextAreaLightInput from './components/textarealightinput.vue'
@@ -12,7 +14,7 @@ export default {
   data() {
     const urlState = {}
     try {
-      const urlData = JSON.parse(window.atob(window.location.hash.replace(/^#/, '')))
+      const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
       for (const key of ['script', 'requirements', 'prompt']) {
         if (typeof urlData[key] === 'string') {
           urlState[key] = urlData[key]
@@ -78,7 +80,7 @@ export default {
         script: this.script,
         requirements: this.requirements
       })
-      window.location.hash = window.btoa(state)
+      window.location.hash = lz.compressToEncodedURIComponent(state)
     },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
