@@ -16,17 +16,17 @@ USER INPUT
 
 Depending on the specifics of the prompt, the script should be able to handle different types of input, specifically:
 
-If it’s required to work on a single file, its location is given using the FILE_INPUT_LOCATIONenvironment variable
+If it’s required to work on a single file, its location is given using the FILE_INPUT_LOCATION environment variable
 
 If it’s required to work on a set of files, a directory containing these is given using the WORKSPACE_LOCATION environment variable. Any subfolder whose name contains pyla_outputshall be excluded
 
-If it’s required to use free text input by the user, this is given using the TEXT_INPUTenvironment variable
+If it’s required to use free text input by the user, this is given using the TEXT_INPUT environment variable
 
 SCRIPT OUTPUT
 
 Depending on the output of the task, the following patterns should be followed:
 
-All file output is saved in a directory called pyla_output which is expected to exist in the directory that is specified by the WORKSPACE_LOCATIONenvironment variable. In case the directory does not exist yet, the script will need to create it.
+All file output is saved in a directory called pyla_output which is expected to exist in the directory that is specified by the WORKSPACE_LOCATION environment variable. In case the directory does not exist yet, the script will need to create it.
 
 If the script outputs a single file, the script is responsible for picking a suitable file name.
 
