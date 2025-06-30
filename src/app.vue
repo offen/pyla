@@ -50,6 +50,9 @@ export default {
     isUsingWorkspace() {
       return this.script.indexOf('WORKSPACE_LOCATION') !== -1
     },
+    isUsingFileInput() {
+      return this.script.indexOf('FILE_INPUT_LOCATION') !== -1
+    },
     isUsingTextInput() {
       return this.script.indexOf('TEXT_INPUT') !== -1
     },
@@ -121,6 +124,15 @@ export default {
           await this.pyodide.runPython(`
             import os
             os.environ['TEXT_INPUT'] = '${textInput}'
+          `)
+        }
+        if (this.isUsingFileInput) {
+          const [fileHandle] = await showOpenFilePicker({
+            startIn: this.dirHandle
+          })
+          await this.pyodide.runPython(`
+            import os
+            os.environ['FILE_INPUT_LOCATION'] = '${this.workspaceLocation}/${fileHandle.name}'
           `)
         }
         this.output = []
