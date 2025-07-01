@@ -1,6 +1,7 @@
 <script>
 
 import lz from 'lz-string'
+import OpenAI from 'openai'
 
 import ButtonMain from './components/buttonmain.vue'
 import ButtonSub from './components/buttonsub.vue'
@@ -77,6 +78,30 @@ export default {
     }
   },
   methods: {
+    storeApiKey(provider, key) {
+      window.localStorage.setItem(`key:${provider}`, key)
+    },
+    retrieveApiKey(provider) {
+      window.localStorage.getItem(`key:${provider}`)
+    },
+    deleteApiKey(provider) {
+      window.localStorage.removeItem(`key:${provider}`)
+    },
+    async fetchRemoteResponse(provider) {
+      switch (provider) {
+      case 'openai':
+        const client = new OpenAI({
+          apiKey: this.retrieveApiKey('openai')
+        })
+        const response = await client.responses.create({
+          model: 'o4-mini',
+          instructions: systemPrompt,
+          input: this.prompt,
+        })
+      default:
+        throw new Error(`Unknown remote provider ${provider}`)
+      }
+    },
     saveURL() {
       const state = JSON.stringify({
         prompt: this.prompt,
