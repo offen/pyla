@@ -8,6 +8,7 @@ import TextAreaLightInput from './components/textarealightinput.vue'
 import TextAreaLight from './components/textarealight.vue'
 import TextAreaDark from './components/textareadark.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
+import RemoteModel from './remote-model.js'
 
 export default {
   components: { ButtonMain, ButtonSub, TextAreaLightInput, TextAreaLight, TextAreaDark },
@@ -94,6 +95,17 @@ export default {
     },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
+    },
+    async remotePrompt () {
+      let token = window.localStorage.getItem('pat_models_token_v1')
+      if (!token) {
+        token = window.prompt('Please provide a PAT for GitHub models:')
+        window.localStorage.setItem('pat_models_token_v1', token)
+      }
+      const remoteModel = new RemoteModel(token)
+      const { script, requirements } = await remoteModel.query(this.prompt, systemPrompt)
+      this.script = script
+      this.requirements = requirements
     },
     async run() {
       try {
@@ -185,8 +197,14 @@ export default {
         v-model="prompt"
       />
     </div>
+
+    <div class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+      <ButtonMain @click="remotePrompt">
+        Prompt remote Model
+      </ButtonMain>
+    </div>
     
-    <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+    <div class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <TextAreaLight
         label="Augmented prompt"
         v-model="augmentedPrompt"
@@ -194,7 +212,7 @@ export default {
       />
     </div>
 
-    <div class="order-6 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+    <div class="order-7 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
       <ButtonMain @click="copyPrompt">
         Copy augmented prompt
       </ButtonMain>
