@@ -11,8 +11,13 @@ export default class RemoteModel {
   }
 
   decorateSystemPrompt(systemPrompt) {
-    return systemPrompt + `
-      Respond as JSON. The script should go in a top level "script" key, the requirements in a "requirements" key.
+    return `
+      ${systemPrompt}
+
+      RESPONSE FORMAT
+
+      Respond with JSON as specified in the given schema.
+      The **script** should go in a top level "script" key, the **requirements** in a "requirements" key.
       If no external dependencies are required, return an empty string for requirements.
     `
   }
@@ -26,7 +31,28 @@ export default class RemoteModel {
       temperature: 1,
       top_p: 1,
       model: this.model,
-      response_format: {type: 'json_object'},
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          strict: true,
+          name: 'pyla',
+          schema: {
+            type: 'object',
+            properties: {
+              script: {
+                type: 'string',
+                description: 'The Python script to be run in the Pyodide runtime',
+              },
+              requirements: {
+                type: 'string',
+                description: 'The requirements.txt as to be installed using pip',
+              },
+            },
+            required: ['script', 'requirements'],
+            additionalProperties: false,
+          },
+        },
+      }
     })
     return JSON.parse(response.choices[0].message.content)
   }
