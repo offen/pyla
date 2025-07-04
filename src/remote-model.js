@@ -25,7 +25,8 @@ export default class RemoteModel {
       ],
       temperature: 1,
       top_p: 1,
-      model: this.model
+      model: this.model,
+      response_format: {type: 'json_object'},
     })
     return JSON.parse(response.choices[0].message.content)
   }
