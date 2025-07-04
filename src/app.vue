@@ -12,16 +12,6 @@ import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 export default {
   components: { ButtonMain, ButtonSub, TextAreaLightInput, TextAreaLight, TextAreaDark },
   data() {
-    const urlState = {}
-    try {
-      const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
-      for (const key of ['script', 'requirements', 'prompt']) {
-        if (typeof urlData[key] === 'string') {
-          urlState[key] = urlData[key]
-        }
-      }
-    } catch {}
-
     return Object.assign({
       pyodide: null,
       script: '',
@@ -32,7 +22,7 @@ export default {
       workspaceFs: null,
       dirHandle: null,
       runtimeError: null
-    }, urlState)
+    }, this.parseUrlState())
   },
   computed: {
     augmentedPrompt() {
@@ -75,8 +65,25 @@ export default {
     } catch (err) {
       this.pyodide = err
     }
+    window.addEventListener('hashchange', () => this.handleHashChange())
   },
   methods: {
+    parseUrlState() {
+      const urlState = {}
+      try {
+        const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
+        for (const key of ['script', 'requirements', 'prompt']) {
+          if (typeof urlData[key] === 'string') {
+            urlState[key] = urlData[key]
+          }
+        }
+      } catch {}
+      return urlState
+    },
+    handleHashChange() {
+      const urlState = this.parseUrlState()
+      Object.assign(this.$data, urlState)
+    },
     saveURL() {
       const state = JSON.stringify({
         prompt: this.prompt,
