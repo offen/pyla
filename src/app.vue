@@ -22,7 +22,9 @@ export default {
       workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
       dirHandle: null,
-      runtimeError: null
+      runtimeError: null,
+      token: window.localStorage.getItem('pat_models_token_v1') || null,
+      loading: false,
     }, this.parseUrlState())
   },
   computed: {
@@ -49,6 +51,11 @@ export default {
     },
     localWorkspacePath() {
       return this.dirHandle ? this.dirHandle.name : null
+    },
+    tokenDisplay() {
+      return this.token
+        ? `${this.token.substr(0, 3)}...${this.token.slice(-3)}`
+        : null
     }
   },
   async mounted() {
@@ -93,19 +100,29 @@ export default {
       })
       window.location.hash = lz.compressToEncodedURIComponent(state)
     },
+    provideToken() {
+      this.token = window.prompt('Please provide a PAT for GitHub models:')
+      window.localStorage.setItem('pat_models_token_v1', this.token)
+    },
+    deleteToken() {
+      this.token = null
+      window.localStorage.removeItem('pat_models_token_v1')
+    },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
     async remotePrompt () {
-      let token = window.localStorage.getItem('pat_models_token_v1')
-      if (!token) {
-        token = window.prompt('Please provide a PAT for GitHub models:')
-        window.localStorage.setItem('pat_models_token_v1', token)
+      const remoteModel = new RemoteModel(this.token)
+      this.loading = true
+      try {
+        const { script, requirements } = await remoteModel.query(this.prompt, systemPrompt)
+        this.script = script
+        this.requirements = requirements
+      } catch (err) {
+        this.runtimeError = new Error(`Error prompting remote model: ${err.message}`)
+      } finally {
+        this.loading = false
       }
-      const remoteModel = new RemoteModel(token)
-      const { script, requirements } = await remoteModel.query(this.prompt, systemPrompt)
-      this.script = script
-      this.requirements = requirements
     },
     async run() {
       try {
@@ -182,6 +199,8 @@ export default {
 
     <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
       <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
+      <p v-if="!token" @click="provideToken" class="cursor-pointer">Provide token</p>
+      <p v-if="token">Token: <span v-if="tokenDisplay">{{ tokenDisplay }}</span>&nbsp;<span class="cursor-pointer" @click="deleteToken">X</span></p>
     </div>
 
     <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
@@ -198,25 +217,27 @@ export default {
       />
     </div>
 
-    <div class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+    <div v-if="token" class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
       <ButtonMain @click="remotePrompt">
         Prompt remote Model
       </ButtonMain>
     </div>
     
-    <div class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
-      <TextAreaLight
-        label="Augmented prompt"
-        v-model="augmentedPrompt"
-        readonly
-      />
-    </div>
+    <template v-if="!token">
+      <div class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+        <TextAreaLight
+          label="Augmented prompt"
+          v-model="augmentedPrompt"
+          readonly
+        />
+      </div>
 
-    <div class="order-7 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-      <ButtonMain @click="copyPrompt">
-        Copy augmented prompt
-      </ButtonMain>
-    </div>
+      <div class="order-7 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+        <ButtonMain @click="copyPrompt">
+          Copy augmented prompt
+        </ButtonMain>
+      </div>
+    </template>
 
     <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
       <TextAreaDark
