@@ -22,7 +22,8 @@ const handleClick = () => {
       'px-4',
       'py-2',
       'cursor-pointer',
-      'rounded-lg'
+      'rounded-lg',
+      'disabled:bg-neutral-200',
     ]"
   >
     <slot />

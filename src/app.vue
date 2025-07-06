@@ -23,6 +23,7 @@ export default {
       workspaceFs: null,
       dirHandle: null,
       runtimeError: null,
+      connectedModel: Boolean(window.localStorage.getItem('pat_models_token_v1')),
       token: window.localStorage.getItem('pat_models_token_v1') || null,
       loading: false,
     }, this.parseUrlState())
@@ -199,8 +200,6 @@ export default {
 
     <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
       <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
-      <p v-if="!token" @click="provideToken" class="cursor-pointer">Provide token</p>
-      <p v-if="token">Token: <span v-if="tokenDisplay">{{ tokenDisplay }}</span>&nbsp;<span class="cursor-pointer" @click="deleteToken">X</span></p>
     </div>
 
     <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
@@ -217,13 +216,25 @@ export default {
       />
     </div>
 
-    <div v-if="token" class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-      <ButtonMain @click="remotePrompt">
-        Prompt remote Model
+    <div class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+      <label>
+        Use Connected Model:
+        <input type="checkbox" v-model="connectedModel">
+      </label>
+    </div>
+
+    <div v-if="connectedModel" class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
+      <p v-if="!token" @click="provideToken" class="cursor-pointer">Provide token</p>
+      <p v-if="token">Token: <span v-if="tokenDisplay">{{ tokenDisplay }}</span>&nbsp;<span class="cursor-pointer" @click="deleteToken">X</span></p>
+      <ButtonMain
+        @click="remotePrompt"
+        :disabled="!token"
+      >
+        Generate script via connected model
       </ButtonMain>
     </div>
     
-    <template v-if="!token">
+    <template v-if="!connectedModel">
       <div class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
         <TextAreaLight
           label="Augmented prompt"
