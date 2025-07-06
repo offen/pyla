@@ -25,6 +25,7 @@ export default {
       runtimeError: null,
       connectedModel: Boolean(window.localStorage.getItem('pat_models_token_v1')),
       token: window.localStorage.getItem('pat_models_token_v1') || null,
+      tokenInput: '',
       loading: false,
     }, this.parseUrlState())
   },
@@ -102,8 +103,9 @@ export default {
       window.location.hash = lz.compressToEncodedURIComponent(state)
     },
     provideToken() {
-      this.token = window.prompt('Please provide a PAT for GitHub models:')
+      this.token = this.tokenInput
       window.localStorage.setItem('pat_models_token_v1', this.token)
+      this.tokenInput = ''
     },
     deleteToken() {
       this.token = null
@@ -224,14 +226,32 @@ export default {
     </div>
 
     <div v-if="connectedModel" class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-      <p v-if="!token" @click="provideToken" class="cursor-pointer">Provide token</p>
-      <p v-if="token">Token: <span v-if="tokenDisplay">{{ tokenDisplay }}</span>&nbsp;<span class="cursor-pointer" @click="deleteToken">X</span></p>
+      <input
+        v-model="tokenInput"
+        type="text"
+        :disabled="token"
+        :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
+      >
+      <ButtonMain v-if="!token" @click="provideToken" class="cursor-pointer">
+        Provide token
+      </ButtonMain>
+      <ButtonMain v-if="token" @click="deleteToken">
+        Disconnect
+      </ButtonMain>
       <ButtonMain
         @click="remotePrompt"
         :disabled="!token"
       >
         Generate script via connected model
       </ButtonMain>
+      <span>
+        <template v-if="loading">
+          Loading ...
+        </template>
+        <template v-else>
+          ...
+        </template>
+      </span>
     </div>
     
     <template v-if="!connectedModel">
