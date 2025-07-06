@@ -111,6 +111,11 @@ export default {
       this.token = null
       window.localStorage.removeItem('pat_models_token_v1')
     },
+    clearAll() {
+      this.script = ''
+      this.requirements = ''
+      this.prompt = ''
+    },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
@@ -204,10 +209,10 @@ export default {
       <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
 
-    <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
-      <p>
-        ?
-      </p>
+    <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center flex justify-end">
+      <ButtonMain @click="clearAll">
+        Clear all form fields
+      </ButtonMain>
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
