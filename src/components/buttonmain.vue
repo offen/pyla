@@ -15,15 +15,16 @@ const handleClick = () => {
     :class="[
       clicked ? 'text-neutral-950' : 'text-white',
       clicked ? 'bg-transparent' : 'bg-neutral-950',
+      'outline-neutral-950',
+      'disabled:bg-neutral-400',
+      'disabled:outline-neutral-400',
       'outline-2',
       'font-semibold',
-      'outline-neutral-950',
       'w-64',
       'px-4',
       'py-2',
       'cursor-pointer',
-      'rounded-lg',
-      'disabled:bg-neutral-200',
+      'rounded-lg'
     ]"
   >
     <slot />

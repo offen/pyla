@@ -225,8 +225,6 @@ export default {
       />
     </div>
 
-
-
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
 
       <div class="bg-neutral-200 rounded-lg p-4">
@@ -238,36 +236,52 @@ export default {
           </label>
           <span>Connected model</span>
         </div>
+
+
      
-        <div v-if="connectedModel" class="">
-          <input
-            v-model="tokenInput"
-            type="text"
-            :disabled="token"
-            :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
-          >
-          <ButtonMain v-if="!token" @click="provideToken" class="cursor-pointer">
-            Provide token
-          </ButtonMain>
-          <ButtonMain v-if="token" @click="deleteToken">
-            Disconnect
-          </ButtonMain>
-          <ButtonMain
-            @click="remotePrompt"
-            :disabled="!token"
-          >
-            Generate script via connected model
-          </ButtonMain>
-          <span>
-            <template v-if="loading">
-              Loading ...
-            </template>
-            <template v-else>
-              ...
-            </template>
-          </span>
+        <div v-if="connectedModel" class="bg-neutral-200 rounded-lg flex flex-col items-center">
+
+          <div class="w-full flex flex-row items-center justify-center gap-4 mt-4">
+            <input
+              v-model="tokenInput"
+              type="text"
+              :disabled="token"
+              :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
+              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-400"
+            >
+            <ButtonMain v-if="!token" @click="provideToken" class="cursor-pointer">
+              Provide token
+            </ButtonMain>
+            <ButtonMain v-if="token" @click="deleteToken">
+              Disconnect
+            </ButtonMain>
+          </div>
+
+          <div class="w-full flex flex-row items-center justify-center gap-4 mt-4">
+            <ButtonMain
+              @click="remotePrompt"
+              :disabled="!token"
+              class="w-64 justify-center"
+            >
+              Generate script
+            </ButtonMain>
+
+            <span class="ml-2 min-w-[60px] text-neutral-500 text-base flex items-center h-10">
+              <template v-if="loading">
+                <span class="animate-pulse">•••</span>
+              </template>
+              <template v-else>
+                &nbsp;
+              </template>
+            </span>
+
+          </div>
         </div>
         
+
+
+
+
         <template v-if="!connectedModel">
           <div class="mt-4">
             <TextAreaLight
