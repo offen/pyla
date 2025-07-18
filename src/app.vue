@@ -230,11 +230,14 @@ export default {
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
 
       <div class="bg-neutral-200 rounded-lg p-4">
-        <label class="toggle-label">
-          Use Connected Model:
-          <input type="checkbox" v-model="connectedModel" class="toggle-checkbox">
-          <span class="toggle-slider"></span>
-        </label>
+        <div class="flex items-center gap-4">
+          <span>Augmented prompt</span>
+          <label class="toggle-label" style="margin-bottom: 0;">
+            <input type="checkbox" v-model="connectedModel" class="toggle-checkbox">
+            <span class="toggle-slider"></span>
+          </label>
+          <span>Connected model</span>
+        </div>
      
         <div v-if="connectedModel" class="">
           <input

@@ -23,7 +23,7 @@
   display: inline-block;
   width: 44px;
   height: 24px;
-  background: #ccc;
+  background: #0a0a0a;
   border-radius: 24px;
   transition: background 0.3s;
   cursor: pointer;
@@ -31,16 +31,13 @@
 .toggle-slider:before {
   content: "";
   position: absolute;
-  left: 4px;
-  top: 4px;
-  width: 16px;
-  height: 16px;
+  left: 2px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
   background: #fff;
   border-radius: 50%;
   transition: transform 0.3s;
-}
-.toggle-checkbox:checked + .toggle-slider {
-  background: #4f46e5;
 }
 .toggle-checkbox:checked + .toggle-slider:before {
   transform: translateX(20px);
