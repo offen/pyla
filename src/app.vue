@@ -220,63 +220,71 @@ export default {
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
       <TextAreaLightInput
-        label="Tool"
         placeholder="What do you want to do?"
         v-model="prompt"
       />
     </div>
 
-    <div class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-      <label>
-        Use Connected Model:
-        <input type="checkbox" v-model="connectedModel">
-      </label>
-    </div>
 
-    <div v-if="connectedModel" class="order-5 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-      <input
-        v-model="tokenInput"
-        type="text"
-        :disabled="token"
-        :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
-      >
-      <ButtonMain v-if="!token" @click="provideToken" class="cursor-pointer">
-        Provide token
-      </ButtonMain>
-      <ButtonMain v-if="token" @click="deleteToken">
-        Disconnect
-      </ButtonMain>
-      <ButtonMain
-        @click="remotePrompt"
-        :disabled="!token"
-      >
-        Generate script via connected model
-      </ButtonMain>
-      <span>
-        <template v-if="loading">
-          Loading ...
+
+    <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+
+      <div class="bg-neutral-200 rounded-lg p-4">
+        <label>
+          Use Connected Model:
+          <input type="checkbox" v-model="connectedModel">
+        </label>
+     
+        <div v-if="connectedModel" class="">
+          <input
+            v-model="tokenInput"
+            type="text"
+            :disabled="token"
+            :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
+          >
+          <ButtonMain v-if="!token" @click="provideToken" class="cursor-pointer">
+            Provide token
+          </ButtonMain>
+          <ButtonMain v-if="token" @click="deleteToken">
+            Disconnect
+          </ButtonMain>
+          <ButtonMain
+            @click="remotePrompt"
+            :disabled="!token"
+          >
+            Generate script via connected model
+          </ButtonMain>
+          <span>
+            <template v-if="loading">
+              Loading ...
+            </template>
+            <template v-else>
+              ...
+            </template>
+          </span>
+        </div>
+        
+        <template v-if="!connectedModel">
+          <div class="">
+            <TextAreaLight
+              v-model="augmentedPrompt"
+              readonly
+            />
+          </div>
+
+          <div class="">
+            <ButtonMain @click="copyPrompt">
+              Copy augmented prompt
+            </ButtonMain>
+          </div>
         </template>
-        <template v-else>
-          ...
-        </template>
-      </span>
-    </div>
-    
-    <template v-if="!connectedModel">
-      <div class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
-        <TextAreaLight
-          label="Augmented prompt"
-          v-model="augmentedPrompt"
-          readonly
-        />
+
       </div>
 
-      <div class="order-7 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-        <ButtonMain @click="copyPrompt">
-          Copy augmented prompt
-        </ButtonMain>
-      </div>
-    </template>
+    </div>
+
+
+
 
     <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
       <TextAreaDark

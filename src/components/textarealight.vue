@@ -9,7 +9,7 @@ const { label, placeholder, rows = 4} = defineProps(['label', 'placeholder', 'ro
     <textarea
       v-bind="$attrs"
       v-model="model"
-      class="h-40 block w-full rounded-lg p-3 mt-2 text-base/6 bg-neutral-50"
+      class="h-40 block w-full rounded-lg p-3 text-base/6 bg-neutral-50"
       :rows="rows"
       :placeholder="placeholder"
     ></textarea>
