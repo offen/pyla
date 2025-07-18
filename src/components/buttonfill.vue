@@ -13,8 +13,8 @@ const handleClick = () => {
     v-bind="$attrs"
     @click="handleClick"
     :class="[
-      clicked ? 'text-neutral-950' : 'text-white',
-      clicked ? 'bg-transparent' : 'bg-neutral-950',
+      'text-white',
+      'bg-neutral-950',
       'outline-neutral-950',
       'disabled:bg-neutral-400',
       'disabled:outline-neutral-400',

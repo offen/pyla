@@ -2,8 +2,8 @@
 
 import lz from 'lz-string'
 
-import ButtonMain from './components/buttonmain.vue'
-import ButtonSub from './components/buttonsub.vue'
+import ButtonFill from './components/buttonfill.vue'
+import ButtonOutline from './components/buttonoutline.vue'
 import TextAreaLightInput from './components/textarealightinput.vue'
 import TextAreaLight from './components/textarealight.vue'
 import TextAreaDark from './components/textareadark.vue'
@@ -11,7 +11,7 @@ import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 import RemoteModel from './remote-model.js'
 
 export default {
-  components: { ButtonMain, ButtonSub, TextAreaLightInput, TextAreaLight, TextAreaDark },
+  components: { ButtonFill, ButtonOutline, TextAreaLightInput, TextAreaLight, TextAreaDark },
   data() {
     return Object.assign({
       pyodide: null,
@@ -210,9 +210,9 @@ export default {
     </div>
 
     <div class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
-      <ButtonSub @click="clearAll">
+      <ButtonOutline @click="clearAll">
         Clear all form fields
-      </ButtonSub>
+      </ButtonOutline>
       <p class="ml-4 text-neutral-500 text-2xl">
         ?
       </p>
@@ -249,21 +249,21 @@ export default {
               :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
               class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-400"
             >
-            <ButtonSub v-if="!token" @click="provideToken" class="cursor-pointer">
+            <ButtonOutline v-if="!token" @click="provideToken" class="cursor-pointer">
               Provide token
-            </ButtonSub>
-            <ButtonSub v-if="token" @click="deleteToken">
+            </ButtonOutline>
+            <ButtonOutline v-if="token" @click="deleteToken">
               Disconnect
-            </ButtonSub>
+            </ButtonOutline>
           </div>
 
           <div class="w-full flex flex-row items-center justify-center gap-4 mt-4">
-            <ButtonMain
+            <ButtonFill
               @click="remotePrompt"
               :disabled="!token"
             >
               Generate script
-            </ButtonMain>
+            </ButtonFill>
 
             <span class="ml-2 min-w-[60px] text-neutral-500 text-base flex items-center h-10">
               <template v-if="loading">
@@ -290,9 +290,9 @@ export default {
           </div>
 
           <div class="mt-4 flex justify-center md:justify-end">
-            <ButtonMain @click="copyPrompt">
+            <ButtonFill @click="copyPrompt">
               Copy augmented prompt
-            </ButtonMain>
+            </ButtonFill>
           </div>
         </template>
 
@@ -321,13 +321,13 @@ export default {
 
     <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
       <div class="flex flex-col self-end">
-        <ButtonMain @click="run" class="mb-4">
+        <ButtonFill @click="run" class="mb-4">
           Run script
-        </ButtonMain>
+        </ButtonFill>
 
-        <ButtonSub @click="saveURL">
+        <ButtonOutline @click="saveURL">
           Generate script URL
-        </ButtonSub>
+        </ButtonOutline>
       </div>
     </div>
 
