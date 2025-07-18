@@ -1,11 +1,12 @@
 <script setup>
-import { ref, useAttrs } from 'vue'
+import { ref, useAttrs, computed } from 'vue'
 
 const clicked = ref(false)
 const $attrs = useAttrs()
+const isDisabled = computed(() => !!$attrs.disabled)
 
 const handleClick = (event) => {
-  if ($attrs.disabled) {
+  if (isDisabled.value) {
     event.preventDefault()
     event.stopPropagation()
     return
@@ -17,6 +18,7 @@ const handleClick = (event) => {
 <template>
   <button
     v-bind="$attrs"
+    :disabled="isDisabled"
     @click="handleClick"
     :class="[
       'text-white',
@@ -29,8 +31,8 @@ const handleClick = (event) => {
       'w-64',
       'px-4',
       'py-2',
-      'cursor-pointer',
-      'rounded-lg'
+      'rounded-lg',
+      isDisabled ? 'pointer-events-none cursor-not-allowed' : 'cursor-pointer'
     ]"
   >
     <slot />

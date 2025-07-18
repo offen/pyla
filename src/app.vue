@@ -206,7 +206,7 @@ export default {
     </div>
 
     <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-4 self-center text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
-      <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
+      <p>Workspace location: <span v-if="localWorkspacePath" class="font-semibold">{{ localWorkspacePath }}</span></p>
     </div>
 
     <div class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
@@ -272,9 +272,7 @@ export default {
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </template>
-              <template v-else>
-                &nbsp;
-              </template>
+              <template v-else></template>
             </span>
 
           </div>
