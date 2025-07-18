@@ -199,20 +199,23 @@ export default {
 
   <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
 
-    <div class="order-1 col-span-1 md:col-span-2 lg:col-span-2 self-center font-semibold text-2xl">
+    <div class="order-1 col-span-2 md:col-span-2 lg:col-span-1 self-center font-semibold text-2xl">
       <h1>
         Pyla
       </h1>
     </div>
 
-    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
+    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-4 self-center text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
       <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
     </div>
 
-    <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center flex justify-end">
-      <ButtonMain @click="clearAll">
+    <div class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
+      <ButtonSub @click="clearAll">
         Clear all form fields
-      </ButtonMain>
+      </ButtonSub>
+      <p class="ml-4 text-neutral-500 text-2xl">
+        ?
+      </p>
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
