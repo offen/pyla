@@ -249,19 +249,18 @@ export default {
               :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
               class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-400"
             >
-            <ButtonMain v-if="!token" @click="provideToken" class="cursor-pointer">
+            <ButtonSub v-if="!token" @click="provideToken" class="cursor-pointer">
               Provide token
-            </ButtonMain>
-            <ButtonMain v-if="token" @click="deleteToken">
+            </ButtonSub>
+            <ButtonSub v-if="token" @click="deleteToken">
               Disconnect
-            </ButtonMain>
+            </ButtonSub>
           </div>
 
           <div class="w-full flex flex-row items-center justify-center gap-4 mt-4">
             <ButtonMain
               @click="remotePrompt"
               :disabled="!token"
-              class="w-64 justify-center"
             >
               Generate script
             </ButtonMain>
