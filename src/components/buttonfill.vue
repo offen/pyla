@@ -1,9 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, useAttrs } from 'vue'
 
 const clicked = ref(false)
+const $attrs = useAttrs()
 
-const handleClick = () => {
+const handleClick = (event) => {
+  if ($attrs.disabled) {
+    event.preventDefault()
+    event.stopPropagation()
+    return
+  }
   clicked.value = true
 }
 </script>
