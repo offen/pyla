@@ -269,14 +269,14 @@ export default {
         </div>
         
         <template v-if="!connectedModel">
-          <div class="">
+          <div class="mt-4">
             <TextAreaLight
               v-model="augmentedPrompt"
               readonly
             />
           </div>
 
-          <div class="">
+          <div class="mt-4 flex justify-center md:justify-end">
             <ButtonMain @click="copyPrompt">
               Copy augmented prompt
             </ButtonMain>
