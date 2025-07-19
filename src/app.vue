@@ -289,12 +289,12 @@ export default {
       </div>
     </div>
 
-
-
     <div class="order-6 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
 
-      <div class="bg-neutral-200 rounded-lg p-4 gap-4">
-        <p>Script</p>
+      <div class="bg-neutral-200 rounded-lg p-4">
+        <p>
+          Script
+        </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-3 lg:col-span-6">
             <TextAreaDark
@@ -328,21 +328,28 @@ export default {
       </div>
     </div>
 
-
-    <div class="order-7">
-
+    <div class="order-7 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <div class="bg-neutral-200 rounded-lg p-4">
-
-        <ButtonOutline @click="saveURL">
-          Generate script URL
-        </ButtonOutline>
-
+        <p class="mb-2">
+          Bookmark
+        </p>
+        <div class="w-full flex flex-row items-center justify-center gap-4">
+          <!-- script title become website title as well, is also saved in URL -->
+          <input
+             type="text"
+             placeholder="Type script title"
+             class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
+           >
+          <ButtonOutline @click="saveURL">
+            Generate script URL
+          </ButtonOutline>
+        </div>
       </div>
     </div>
 
     <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-10 mb-20">
-      <p class="block mb-2 text-neutral-500">
-          Output
+      <p class="mb-2">
+        Output
       </p>
       <div class="rounded-lg p-3 bg-neutral-50">
           <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
