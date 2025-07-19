@@ -244,7 +244,7 @@ export default {
               type="text"
               :disabled="token"
               :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
-              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-500 disabled:bg-neutral-100 disabled:text-neutral-500"
+              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
             >
             <ButtonOutline v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
               Provide token
@@ -294,7 +294,7 @@ export default {
     <div class="order-6 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
 
       <div class="bg-neutral-200 rounded-lg p-4 gap-4">
-
+        <p>Script</p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-3 lg:col-span-6">
             <TextAreaDark
@@ -309,12 +309,13 @@ export default {
             />
           </div>
         </div>
-
         <div class="w-full flex flex-row items-center justify-center mt-6">
           <ButtonFill @click="run">
             Run script
           </ButtonFill>
+           
           <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+            <!-- animate-spin while running script, ends when script finished -->
             <template v-if="false && loading">
               <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -324,9 +325,7 @@ export default {
             <template v-else></template>
           </span>
         </div>
-      
       </div>
-
     </div>
 
 
