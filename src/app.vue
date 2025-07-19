@@ -236,11 +236,8 @@ export default {
           </label>
           <span>Connected model</span>
         </div>
-
-
      
         <div v-if="connectedModel" class="bg-neutral-200 rounded-lg flex flex-col items-center">
-
           <div class="w-full flex flex-row items-center justify-center mt-6">
             <input
               v-model="tokenInput"
@@ -256,7 +253,6 @@ export default {
               Disconnect
             </ButtonOutline>
           </div>
-
           <div class="w-full flex flex-row items-center justify-center mt-6">
             <ButtonFill
               @click="remotePrompt"
@@ -264,7 +260,6 @@ export default {
             >
               Generate script
             </ButtonFill>
-
             <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
               <template v-if="loading">
                 <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -274,13 +269,8 @@ export default {
               </template>
               <template v-else></template>
             </span>
-
           </div>
         </div>
-        
-
-
-
 
         <template v-if="!connectedModel">
           <div class="mt-6">
@@ -289,7 +279,6 @@ export default {
               readonly
             />
           </div>
-
           <div class="mt-4 flex justify-center">
             <ButtonFill @click="copyPrompt">
               Copy augmented prompt
@@ -298,41 +287,61 @@ export default {
         </template>
 
       </div>
-
     </div>
 
 
 
+    <div class="order-6 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
 
-    <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
-      <TextAreaDark
-        label="Script"
-        placeholder="Paste script from LLM ..."
-        v-model="script"
-      />
+      <div class="bg-neutral-200 rounded-lg p-4 gap-4">
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div class="col-span-2 md:col-span-3 lg:col-span-6">
+            <TextAreaDark
+              placeholder="Paste script from LLM ..."
+              v-model="script"
+            />
+          </div>
+          <div class="col-span-2 md:col-span-1 lg:col-span-2">
+            <TextAreaDark
+              placeholder="Paste requirements from LLM ..."
+              v-model="requirements"
+            />
+          </div>
+        </div>
+
+        <div class="w-full flex flex-row items-center justify-center mt-6">
+          <ButtonFill @click="run">
+            Run script
+          </ButtonFill>
+          <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+            <template v-if="false && loading">
+              <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </template>
+            <template v-else></template>
+          </span>
+        </div>
+      
+      </div>
+
     </div>
 
-    <div class="order-8 col-span-2 md:col-span-2 lg:col-span-3">
-      <TextAreaDark
-        label="Requirements"
-        placeholder="Paste requirements from LLM ..."
-        v-model="requirements"
-      />
-    </div>
 
-    <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
-      <div class="flex flex-col self-end">
-        <ButtonFill @click="run" class="mb-4">
-          Run script
-        </ButtonFill>
+    <div class="order-7">
+
+      <div class="bg-neutral-200 rounded-lg p-4">
 
         <ButtonOutline @click="saveURL">
           Generate script URL
         </ButtonOutline>
+
       </div>
     </div>
 
-    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 mt-10 mb-20">
+    <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-10 mb-20">
       <p class="block mb-2 text-neutral-500">
           Output
       </p>
