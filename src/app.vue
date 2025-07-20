@@ -359,11 +359,28 @@ export default {
 
   </div>
 
-  <div v-else class="order-11 text-neutral-500">
-    <p>Python runtime is initializing ...</p>
+  <div v-else class="order-9">
+      <div class="flex flex-row items-center gap-x-4">
+        <div class="font-semibold text-2xl">
+          <h1>
+            Pyla
+          </h1>
+        </div>
+        <div class="text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
+          <p>
+            Python runtime is initializing
+          </p>
+        </div>
+        <div class="w-10 h-10 outline-2 outline-neutral-400 bg-neutral-400 rounded-lg flex items-center justify-center">
+          <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
   </div>
 
-  <footer class="mb-10 mt-6 text-neutral-500">
+  <footer class="mb-6 mt-10 text-neutral-500">
     <div class="flex justify-between">
       <div class="">
         July 2025
