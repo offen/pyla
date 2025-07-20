@@ -299,13 +299,13 @@ export default {
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-3 lg:col-span-6">
             <TextAreaDark
-              placeholder="Paste script from LLM ..."
+              :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
               v-model="script"
             />
           </div>
           <div class="col-span-2 md:col-span-1 lg:col-span-2">
             <TextAreaDark
-              placeholder="Paste requirements from LLM ..."
+              :placeholder="connectedModel ? 'Requirements from connected model goes here ...' : 'Paste requirements from LLM ...'"
               v-model="requirements"
             />
           </div>
