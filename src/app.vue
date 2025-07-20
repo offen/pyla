@@ -18,6 +18,7 @@ export default {
       script: '',
       requirements: '',
       prompt: '',
+      title: '',
       output: [],
       workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
@@ -61,6 +62,14 @@ export default {
         : null
     }
   },
+  watch: {
+    title: {
+      immediate: true,
+      handler(current, prev) {
+        document.title = `${current} | Pyla`
+      }
+    }
+  },
   async mounted() {
     try {
       const pyodide = await window.loadPyodide({
@@ -83,7 +92,7 @@ export default {
       const urlState = {}
       try {
         const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
-        for (const key of ['script', 'requirements', 'prompt']) {
+        for (const key of ['script', 'requirements', 'prompt', 'title']) {
           if (typeof urlData[key] === 'string') {
             urlState[key] = urlData[key]
           }
@@ -99,7 +108,8 @@ export default {
       const state = JSON.stringify({
         prompt: this.prompt,
         script: this.script,
-        requirements: this.requirements
+        requirements: this.requirements,
+        title: this.title,
       })
       window.location.hash = lz.compressToEncodedURIComponent(state)
     },
@@ -340,6 +350,7 @@ export default {
         <div class="w-full flex flex-row items-center justify-center gap-4">
           <!-- script title become website title as well, is also saved in URL -->
           <input
+             v-model="title"
              type="text"
              placeholder="Type script title ..."
              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
