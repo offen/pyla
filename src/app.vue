@@ -27,6 +27,7 @@ export default {
       token: window.localStorage.getItem('pat_models_token_v1') || null,
       tokenInput: '',
       loading: false,
+      executing: false,
     }, this.parseUrlState())
   },
   computed: {
@@ -134,6 +135,7 @@ export default {
     },
     async run() {
       try {
+        this.executing = true
         if (this.requirements.trim()) {
           const requirements = this.requirements
             .trim()
@@ -189,6 +191,8 @@ export default {
         }
       } catch (err) {
         this.output.push(err.message)
+      } finally {
+        this.executing = false
       }
     }
   }
@@ -316,8 +320,7 @@ export default {
           </ButtonFill>
            
           <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
-            <!-- animate-spin while running script, ends when script finished -->
-            <template v-if="false && loading">
+            <template v-if="executing">
               <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
