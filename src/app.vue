@@ -220,6 +220,7 @@ export default {
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
       <TextAreaLightInput
+        class="placeholder:text-neutral-950"
         placeholder="What do you want to do?"
         v-model="prompt"
       />
@@ -378,7 +379,7 @@ export default {
       </div>
   </div>
 
-  <footer class="mb-6 mt-10 text-neutral-500">
+  <footer class="mb-2 mt-20 text-neutral-500">
     <div class="flex justify-between">
       <div class="">
         July 2025
