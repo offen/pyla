@@ -2,26 +2,33 @@
 
 import lz from 'lz-string'
 
-import ButtonMain from './components/buttonmain.vue'
-import ButtonSub from './components/buttonsub.vue'
+import ButtonFill from './components/buttonfill.vue'
+import ButtonOutline from './components/buttonoutline.vue'
 import TextAreaLightInput from './components/textarealightinput.vue'
 import TextAreaLight from './components/textarealight.vue'
 import TextAreaDark from './components/textareadark.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
+import RemoteModel from './remote-model.js'
 
 export default {
-  components: { ButtonMain, ButtonSub, TextAreaLightInput, TextAreaLight, TextAreaDark },
+  components: { ButtonFill, ButtonOutline, TextAreaLightInput, TextAreaLight, TextAreaDark },
   data() {
     return Object.assign({
       pyodide: null,
       script: '',
       requirements: '',
       prompt: '',
+      title: '',
       output: [],
       workspaceLocation: '/home/pyodide/pyla',
       workspaceFs: null,
       dirHandle: null,
-      runtimeError: null
+      runtimeError: null,
+      connectedModel: Boolean(window.localStorage.getItem('pat_models_token_v1')),
+      token: window.localStorage.getItem('pat_models_token_v1') || null,
+      tokenInput: '',
+      loading: false,
+      executing: false,
     }, this.parseUrlState())
   },
   computed: {
@@ -48,6 +55,19 @@ export default {
     },
     localWorkspacePath() {
       return this.dirHandle ? this.dirHandle.name : null
+    },
+    tokenDisplay() {
+      return this.token
+        ? `${this.token.substr(0, 3)}...${this.token.slice(-3)}`
+        : null
+    }
+  },
+  watch: {
+    title: {
+      immediate: true,
+      handler(current, prev) {
+        document.title = `${current} | Pyla`
+      }
     }
   },
   async mounted() {
@@ -72,7 +92,7 @@ export default {
       const urlState = {}
       try {
         const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
-        for (const key of ['script', 'requirements', 'prompt']) {
+        for (const key of ['script', 'requirements', 'prompt', 'title']) {
           if (typeof urlData[key] === 'string') {
             urlState[key] = urlData[key]
           }
@@ -88,15 +108,44 @@ export default {
       const state = JSON.stringify({
         prompt: this.prompt,
         script: this.script,
-        requirements: this.requirements
+        requirements: this.requirements,
+        title: this.title,
       })
       window.location.hash = lz.compressToEncodedURIComponent(state)
+    },
+    provideToken() {
+      this.token = this.tokenInput
+      window.localStorage.setItem('pat_models_token_v1', this.token)
+      this.tokenInput = ''
+    },
+    deleteToken() {
+      this.token = null
+      window.localStorage.removeItem('pat_models_token_v1')
+    },
+    clearAll() {
+      this.script = ''
+      this.requirements = ''
+      this.prompt = ''
     },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
+    async remotePrompt () {
+      const remoteModel = new RemoteModel(this.token)
+      this.loading = true
+      try {
+        const { script, requirements } = await remoteModel.query(this.prompt, systemPrompt)
+        this.script = script
+        this.requirements = requirements
+      } catch (err) {
+        this.runtimeError = new Error(`Error prompting remote model: ${err.message}`)
+      } finally {
+        this.loading = false
+      }
+    },
     async run() {
       try {
+        this.executing = true
         if (this.requirements.trim()) {
           const requirements = this.requirements
             .trim()
@@ -152,6 +201,8 @@ export default {
         }
       } catch (err) {
         this.output.push(err.message)
+      } finally {
+        this.executing = false
       }
     }
   }
@@ -162,75 +213,158 @@ export default {
 
   <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
 
-    <div class="order-1 col-span-1 md:col-span-2 lg:col-span-2 self-center font-semibold text-2xl">
+    <div class="order-1 col-span-2 md:col-span-2 lg:col-span-1 self-center font-semibold text-2xl">
       <h1>
         Pyla
       </h1>
     </div>
 
-    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-5 self-center text-neutral-500">
-      <p>Workspace location: <span v-if="localWorkspacePath">{{ localWorkspacePath }}</span></p>
+    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-4 self-center text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
+      <p>Workspace location: <span v-if="localWorkspacePath" class="font-semibold">{{ localWorkspacePath }}</span></p>
     </div>
 
-    <div class="order-2 md:order-2 lg:order-3 col-span-1 md:col-span-2 lg:col-span-1 text-neutral-500 self-center text-2xl flex justify-end">
-      <p>
+    <div class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
+      <ButtonOutline @click="clearAll">
+        Clear all form fields
+      </ButtonOutline>
+      <p class="ml-4 text-neutral-500 text-2xl">
         ?
       </p>
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
       <TextAreaLightInput
-        label="Tool"
+        class="placeholder:text-neutral-950"
         placeholder="What do you want to do?"
         v-model="prompt"
       />
     </div>
-    
+
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
-      <TextAreaLight
-        label="Augmented prompt"
-        v-model="augmentedPrompt"
-        readonly
-      />
-    </div>
 
-    <div class="order-6 col-span-2 md:col-span-4 lg:col-start-5 lg:col-span-3 flex justify-center md:justify-end">
-      <ButtonMain @click="copyPrompt">
-        Copy augmented prompt
-      </ButtonMain>
-    </div>
+      <div class="bg-neutral-200 rounded-lg p-4">
+        <div class="flex items-center gap-4">
+          <span>Augmented prompt</span>
+          <label class="toggle-label" style="margin-bottom: 0;">
+            <input type="checkbox" v-model="connectedModel" class="toggle-checkbox">
+            <span class="toggle-slider"></span>
+          </label>
+          <span>Connected model</span>
+        </div>
+     
+        <div v-if="connectedModel" class="bg-neutral-200 rounded-lg flex flex-col items-center">
+          <div class="w-full flex flex-row items-center justify-center mt-6">
+            <input
+              v-model="tokenInput"
+              type="text"
+              :disabled="token"
+              :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models ...'"
+              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
+            >
+            <ButtonOutline v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
+              Provide token
+            </ButtonOutline>
+            <ButtonOutline v-if="token" @click="deleteToken" class="ml-4">
+              Disconnect
+            </ButtonOutline>
+          </div>
+          <div class="w-full flex flex-row items-center justify-center mt-6">
+            <ButtonFill
+              @click="remotePrompt"
+              :disabled="!token"
+            >
+              Generate script
+            </ButtonFill>
+            <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+              <template v-if="loading">
+                <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </template>
+              <template v-else></template>
+            </span>
+          </div>
+        </div>
 
-    <div class="order-7 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
-      <TextAreaDark
-        label="Script"
-        placeholder="Paste script from LLM ..."
-        v-model="script"
-      />
-    </div>
+        <template v-if="!connectedModel">
+          <div class="mt-6">
+            <TextAreaLight
+              v-model="augmentedPrompt"
+              readonly
+            />
+          </div>
+          <div class="mt-4 flex justify-center">
+            <ButtonFill @click="copyPrompt">
+              Copy augmented prompt
+            </ButtonFill>
+          </div>
+        </template>
 
-    <div class="order-8 col-span-2 md:col-span-2 lg:col-span-3">
-      <TextAreaDark
-        label="Requirements"
-        placeholder="Paste requirements from LLM ..."
-        v-model="requirements"
-      />
-    </div>
-
-    <div class="order-9 col-span-2 md:col-start-3 md:col-span-2 lg:col-start-6 lg:col-span-3 flex justify-center md:justify-end">
-      <div class="flex flex-col self-end">
-        <ButtonMain @click="run" class="mb-4">
-          Run script
-        </ButtonMain>
-
-        <ButtonSub @click="saveURL">
-          Generate script URL
-        </ButtonSub>
       </div>
     </div>
 
-    <div class="order-10 col-span-2 md:col-span-4 lg:col-span-8 mt-10 mb-20">
-      <p class="block mb-2 text-sm/5 text-neutral-500">
-          Output
+    <div class="order-6 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
+
+      <div class="bg-neutral-200 rounded-lg p-4">
+        <p>
+          Script
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div class="col-span-2 md:col-span-3 lg:col-span-6">
+            <TextAreaDark
+              :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
+              v-model="script"
+            />
+          </div>
+          <div class="col-span-2 md:col-span-1 lg:col-span-2">
+            <TextAreaDark
+              :placeholder="connectedModel ? 'Requirements from connected model goes here ...' : 'Paste requirements from LLM ...'"
+              v-model="requirements"
+            />
+          </div>
+        </div>
+        <div class="w-full flex flex-row items-center justify-center mt-6">
+          <ButtonFill @click="run">
+            Run script
+          </ButtonFill>
+           
+          <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+            <template v-if="executing">
+              <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </template>
+            <template v-else></template>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-7 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+      <div class="bg-neutral-200 rounded-lg p-4">
+        <p class="mb-2">
+          Bookmark
+        </p>
+        <div class="w-full flex flex-row items-center justify-center gap-4">
+          <!-- script title become website title as well, is also saved in URL -->
+          <input
+             v-model="title"
+             type="text"
+             placeholder="Type script title ..."
+             class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
+           >
+          <ButtonOutline @click="saveURL">
+            Generate script URL
+          </ButtonOutline>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
+      <p class="mb-2">
+        Output
       </p>
       <div class="rounded-lg p-3 bg-neutral-50">
           <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
@@ -240,8 +374,35 @@ export default {
 
   </div>
 
-  <div v-else class="order-11 col-span-2 md:col-span-4 lg:col-span-8 text-neutral-500">
-    <p>Python runtime is initializing ...</p>
+  <div v-else class="order-9 flex flex-row items-center">
+      <div class="font-semibold text-2xl">
+        <h1>
+          Pyla
+        </h1>
+      </div>
+      <div class="w-10 h-10 outline-2 outline-neutral-400 bg-neutral-400 rounded-lg flex items-center justify-center ml-6">
+        <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <div class="h-10 text-neutral-500 flex items-center ml-6">
+        <p>
+          Python runtime is initializing ...
+        </p>
+      </div>
   </div>
 
+  <footer class="mb-2 mt-20 text-neutral-500">
+    <div class="flex justify-between">
+      <div class="">
+        July 2025
+      </div>
+      <div class="">
+        <a href="https://github.com/offen/pyla/tree/gh-models" target="_blank" rel="noopener" class="no-underline">Source code for this tool</a>
+      </div>
+    </div>
+  </footer>
+
 </template>
+
