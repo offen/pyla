@@ -16,7 +16,7 @@ const handleClick = () => {
       'text-neutral-950',
       'font-semibold',
       'bg-transparent',
-      'outline-3',
+      'outline-2',
       'outline-neutral-950',
       'w-64',
       'px-4',
