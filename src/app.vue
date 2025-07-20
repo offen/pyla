@@ -243,7 +243,7 @@ export default {
               v-model="tokenInput"
               type="text"
               :disabled="token"
-              :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models'"
+              :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models ...'"
               class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
             >
             <ButtonOutline v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
@@ -337,7 +337,7 @@ export default {
           <!-- script title become website title as well, is also saved in URL -->
           <input
              type="text"
-             placeholder="Type script title"
+             placeholder="Type script title ..."
              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
            >
           <ButtonOutline @click="saveURL">
@@ -347,7 +347,7 @@ export default {
       </div>
     </div>
 
-    <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-10 mb-20">
+    <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
       <p class="mb-2">
         Output
       </p>
@@ -359,8 +359,20 @@ export default {
 
   </div>
 
-  <div v-else class="order-11 col-span-2 md:col-span-4 lg:col-span-8 text-neutral-500">
+  <div v-else class="order-11 text-neutral-500">
     <p>Python runtime is initializing ...</p>
   </div>
 
+  <footer class="mb-10 mt-6 text-neutral-500">
+    <div class="flex justify-between">
+      <div class="">
+        July 2025
+      </div>
+      <div class="">
+        <a href="https://github.com/offen/pyla/tree/gh-models" target="_blank" rel="noopener" class="no-underline">Source code for this tool</a>
+      </div>
+    </div>
+  </footer>
+
 </template>
+
