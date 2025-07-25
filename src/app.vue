@@ -1,6 +1,7 @@
 <script>
 
 import lz from 'lz-string'
+import toml from 'toml'
 
 import ButtonFill from './components/buttonfill.vue'
 import ButtonOutline from './components/buttonoutline.vue'
@@ -139,18 +140,59 @@ export default {
         this.loading = false
       }
     },
-    parseRequirements(script) {
-      return []
+    parseMetadata(script) {
+      const REGEX = /^# \/\/\/ ([a-zA-Z0-9-]+)$(?:\r?\n|\r)((?:^#(?: |.*)?$(?:\r?\n|\r))+)^# \/\/\/$/mg
+
+      const name = 'script'
+      const matches = []
+      let match
+
+      // Use global regex with exec to find all matches
+      // Resetting lastIndex for safety, though it should be at 0 for a new search
+      REGEX.lastIndex = 0
+      while ((match = REGEX.exec(script)) !== null) {
+          // match[1] corresponds to the 'type' named group in Python
+          if (match[1] === name) {
+              matches.push(match)
+          }
+      }
+
+      if (matches.length > 1) {
+          throw new Error(`Multiple ${name} blocks found`)
+      } else if (matches.length === 1) {
+        // matches[0][2] corresponds to the 'content' named group in Python
+        const contentRaw = matches[0][2]
+
+        // Process content lines: remove '# ' or '#' prefix
+        const contentLines = contentRaw.split(/\r?\n|\r/);
+        const processedContent = contentLines.map(line => {
+            if (line.startsWith('# ')) {
+                return line.substring(2)
+            } else if (line.startsWith('#')) {
+                return line.substring(1)
+            }
+            return line; // Should not happen if regex is correct, but for safety
+        }).join('\n') // Join with '\n' as tomllib expects standard newlines
+
+        try {
+          return toml.parse(processedContent)
+        } catch (e) {
+          // Add context to the TOML parsing error
+          throw new Error(`Error parsing TOML content in '${name}' block: ${e.message}`)
+        }
+      } else {
+          return null
+      }
     },
     async run() {
       try {
         this.executing = true
-        const requirements = this.parseRequirements(this.script)
-        if (requirements.length) {
+        const metadata = this.parseMetadata(this.script)
+        if (metadata && Array.isArray(metadata.dependencies) && metadata.dependencies.length) {
           await this.pyodide.loadPackage('micropip')
               .then(() => this.pyodide.pyimport('micropip'))
               .then(async micropip => {
-                for (const req of requirements) {
+                for (const req of metadata.dependencies) {
                   await micropip.install(req)
                 }
               })
