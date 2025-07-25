@@ -16,7 +16,6 @@ export default {
     return Object.assign({
       pyodide: null,
       script: '',
-      requirements: '',
       prompt: '',
       title: '',
       output: [],
@@ -92,7 +91,7 @@ export default {
       const urlState = {}
       try {
         const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
-        for (const key of ['script', 'requirements', 'prompt', 'title']) {
+        for (const key of ['script', 'prompt', 'title']) {
           if (typeof urlData[key] === 'string') {
             urlState[key] = urlData[key]
           }
@@ -108,7 +107,6 @@ export default {
       const state = JSON.stringify({
         prompt: this.prompt,
         script: this.script,
-        requirements: this.requirements,
         title: this.title,
       })
       window.location.hash = lz.compressToEncodedURIComponent(state)
@@ -124,7 +122,6 @@ export default {
     },
     clearAll() {
       this.script = ''
-      this.requirements = ''
       this.prompt = ''
     },
     async copyPrompt() {
@@ -134,24 +131,22 @@ export default {
       const remoteModel = new RemoteModel(this.token)
       this.loading = true
       try {
-        const { script, requirements } = await remoteModel.query(this.prompt, systemPrompt)
+        const { script } = await remoteModel.query(this.prompt, systemPrompt)
         this.script = script
-        this.requirements = requirements
       } catch (err) {
         this.runtimeError = new Error(`Error prompting remote model: ${err.message}`)
       } finally {
         this.loading = false
       }
     },
+    parseRequirements(script) {
+      return []
+    },
     async run() {
       try {
         this.executing = true
-        if (this.requirements.trim()) {
-          const requirements = this.requirements
-            .trim()
-            .split('\n')
-            .filter((l) => !l.trim().startsWith('#'))
-
+        const requirements = this.parseRequirements(this.script)
+        if (requirements.length) {
           await this.pyodide.loadPackage('micropip')
               .then(() => this.pyodide.pyimport('micropip'))
               .then(async micropip => {
@@ -311,16 +306,10 @@ export default {
           Script
         </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          <div class="col-span-2 md:col-span-3 lg:col-span-6">
+          <div class="col-span-2 md:col-span-4 lg:col-span-8">
             <TextAreaDark
               :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
               v-model="script"
-            />
-          </div>
-          <div class="col-span-2 md:col-span-1 lg:col-span-2">
-            <TextAreaDark
-              :placeholder="connectedModel ? 'Requirements from connected model goes here ...' : 'Paste requirements from LLM ...'"
-              v-model="requirements"
             />
           </div>
         </div>

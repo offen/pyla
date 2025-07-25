@@ -17,8 +17,7 @@ export default class RemoteModel {
       RESPONSE FORMAT
 
       Respond with JSON as specified in the given schema.
-      The **script** should go in a top level "script" key, the **requirements** in a "requirements" key.
-      If no external dependencies are required, return an empty string for requirements.
+      The **script** content goes in a top level "script" key.
     `
   }
 
@@ -43,12 +42,8 @@ export default class RemoteModel {
                 type: 'string',
                 description: 'The Python script to be run in the Pyodide runtime',
               },
-              requirements: {
-                type: 'string',
-                description: 'The requirements.txt as to be installed using pip',
-              },
             },
-            required: ['script', 'requirements'],
+            required: ['script'],
             additionalProperties: false,
           },
         },
