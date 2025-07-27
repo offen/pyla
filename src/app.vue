@@ -1,6 +1,7 @@
 <script>
 
 import lz from 'lz-string'
+import toml from 'toml'
 
 import ButtonFill from './components/buttonfill.vue'
 import ButtonOutline from './components/buttonoutline.vue'
@@ -16,7 +17,6 @@ export default {
     return Object.assign({
       pyodide: null,
       script: '',
-      requirements: '',
       prompt: '',
       title: '',
       output: [],
@@ -92,7 +92,7 @@ export default {
       const urlState = {}
       try {
         const urlData = JSON.parse(lz.decompressFromEncodedURIComponent(window.location.hash.replace(/^#/, '')))
-        for (const key of ['script', 'requirements', 'prompt', 'title']) {
+        for (const key of ['script', 'prompt', 'title']) {
           if (typeof urlData[key] === 'string') {
             urlState[key] = urlData[key]
           }
@@ -108,7 +108,6 @@ export default {
       const state = JSON.stringify({
         prompt: this.prompt,
         script: this.script,
-        requirements: this.requirements,
         title: this.title,
       })
       window.location.hash = lz.compressToEncodedURIComponent(state)
@@ -124,7 +123,6 @@ export default {
     },
     clearAll() {
       this.script = ''
-      this.requirements = ''
       this.prompt = ''
     },
     async copyPrompt() {
@@ -134,28 +132,67 @@ export default {
       const remoteModel = new RemoteModel(this.token)
       this.loading = true
       try {
-        const { script, requirements } = await remoteModel.query(this.prompt, systemPrompt)
+        const { script } = await remoteModel.query(this.prompt, systemPrompt)
         this.script = script
-        this.requirements = requirements
       } catch (err) {
         this.runtimeError = new Error(`Error prompting remote model: ${err.message}`)
       } finally {
         this.loading = false
       }
     },
+    parseMetadata(script) {
+      const REGEX = /^# \/\/\/ ([a-zA-Z0-9-]+)$(?:\r?\n|\r)((?:^#(?: |.*)?$(?:\r?\n|\r))+)^# \/\/\/$/mg
+
+      const name = 'script'
+      const matches = []
+      let match
+
+      // Use global regex with exec to find all matches
+      // Resetting lastIndex for safety, though it should be at 0 for a new search
+      REGEX.lastIndex = 0
+      while ((match = REGEX.exec(script)) !== null) {
+          // match[1] corresponds to the 'type' named group in Python
+          if (match[1] === name) {
+              matches.push(match)
+          }
+      }
+
+      if (matches.length > 1) {
+          throw new Error(`Multiple ${name} blocks found`)
+      } else if (matches.length === 1) {
+        // matches[0][2] corresponds to the 'content' named group in Python
+        const contentRaw = matches[0][2]
+
+        // Process content lines: remove '# ' or '#' prefix
+        const contentLines = contentRaw.split(/\r?\n|\r/);
+        const processedContent = contentLines.map(line => {
+            if (line.startsWith('# ')) {
+                return line.substring(2)
+            } else if (line.startsWith('#')) {
+                return line.substring(1)
+            }
+            return line; // Should not happen if regex is correct, but for safety
+        }).join('\n') // Join with '\n' as tomllib expects standard newlines
+
+        try {
+          return toml.parse(processedContent)
+        } catch (e) {
+          // Add context to the TOML parsing error
+          throw new Error(`Error parsing TOML content in '${name}' block: ${e.message}`)
+        }
+      } else {
+          return null
+      }
+    },
     async run() {
       try {
         this.executing = true
-        if (this.requirements.trim()) {
-          const requirements = this.requirements
-            .trim()
-            .split('\n')
-            .filter((l) => !l.trim().startsWith('#'))
-
+        const metadata = this.parseMetadata(this.script)
+        if (metadata && Array.isArray(metadata.dependencies) && metadata.dependencies.length) {
           await this.pyodide.loadPackage('micropip')
               .then(() => this.pyodide.pyimport('micropip'))
               .then(async micropip => {
-                for (const req of requirements) {
+                for (const req of metadata.dependencies) {
                   await micropip.install(req)
                 }
               })
@@ -311,16 +348,10 @@ export default {
           Script
         </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          <div class="col-span-2 md:col-span-3 lg:col-span-6">
+          <div class="col-span-2 md:col-span-4 lg:col-span-8">
             <TextAreaDark
               :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
               v-model="script"
-            />
-          </div>
-          <div class="col-span-2 md:col-span-1 lg:col-span-2">
-            <TextAreaDark
-              :placeholder="connectedModel ? 'Requirements from connected model goes here ...' : 'Paste requirements from LLM ...'"
-              v-model="requirements"
             />
           </div>
         </div>
