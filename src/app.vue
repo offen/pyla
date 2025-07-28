@@ -63,7 +63,7 @@ export default {
     title: {
       immediate: true,
       handler(current, prev) {
-        document.title = `${current} | Pyla`
+        document.title = current ? `${current} | Pyla` : 'Pyla'
       }
     }
   },
@@ -348,7 +348,7 @@ export default {
           Script
         </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          <div class="col-span-2 md:col-span-3 lg:col-span-6">
+          <div class="col-span-2 md:col-span-4 lg:col-span-8">
             <TextArea
               type="dark"
               :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
