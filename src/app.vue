@@ -5,14 +5,12 @@ import toml from 'toml'
 
 import ButtonFill from './components/buttonfill.vue'
 import ButtonOutline from './components/buttonoutline.vue'
-import TextAreaLightInput from './components/textarealightinput.vue'
-import TextAreaLight from './components/textarealight.vue'
-import TextAreaDark from './components/textareadark.vue'
+import TextArea from './components/textarea.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 import RemoteModel from './remote-model.js'
 
 export default {
-  components: { ButtonFill, ButtonOutline, TextAreaLightInput, TextAreaLight, TextAreaDark },
+  components: { ButtonFill, ButtonOutline, TextArea },
   data() {
     return Object.assign({
       pyodide: null,
@@ -270,7 +268,8 @@ export default {
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
-      <TextAreaLightInput
+      <TextArea
+        type="lightinput"
         class="placeholder:text-neutral-950"
         placeholder="What do you want to do?"
         v-model="prompt"
@@ -326,7 +325,8 @@ export default {
 
         <template v-if="!connectedModel">
           <div class="mt-6">
-            <TextAreaLight
+            <TextArea
+              type="light"
               v-model="augmentedPrompt"
               readonly
             />
@@ -348,8 +348,9 @@ export default {
           Script
         </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          <div class="col-span-2 md:col-span-4 lg:col-span-8">
-            <TextAreaDark
+          <div class="col-span-2 md:col-span-3 lg:col-span-6">
+            <TextArea
+              type="dark"
               :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
               v-model="script"
             />
@@ -430,10 +431,9 @@ export default {
         July 2025
       </div>
       <div class="">
-        <a href="https://github.com/offen/pyla/tree/gh-models" target="_blank" rel="noopener" class="no-underline">Source code for this tool</a>
+        <a href="https://github.com/offen/pyla" target="_blank" rel="noopener" class="no-underline">Source code for this tool</a>
       </div>
     </div>
   </footer>
 
 </template>
-
