@@ -3,14 +3,13 @@
 import lz from 'lz-string'
 import toml from 'toml'
 
-import ButtonFill from './components/buttonfill.vue'
-import ButtonOutline from './components/buttonoutline.vue'
+import Button from './components/button.vue'
 import TextArea from './components/textarea.vue'
 import systemPrompt from './../SYSTEM_PROMPT.md?raw'
 import RemoteModel from './remote-model.js'
 
 export default {
-  components: { ButtonFill, ButtonOutline, TextArea },
+  components: { Button, TextArea },
   data() {
     return Object.assign({
       pyodide: null,
@@ -259,9 +258,9 @@ export default {
     </div>
 
     <div class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
-      <ButtonOutline @click="clearAll">
+      <Button type="outline" @click="clearAll">
         Clear all form fields
-      </ButtonOutline>
+      </Button>
       <p class="ml-4 text-neutral-500 text-2xl">
         ?
       </p>
@@ -297,20 +296,21 @@ export default {
               :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models ...'"
               class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
             >
-            <ButtonOutline v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
+            <Button type="outline" v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
               Provide token
-            </ButtonOutline>
-            <ButtonOutline v-if="token" @click="deleteToken" class="ml-4">
+            </Button>
+            <Button type="outline" v-if="token" @click="deleteToken" class="ml-4">
               Disconnect
-            </ButtonOutline>
+            </Button>
           </div>
           <div class="w-full flex flex-row items-center justify-center mt-6">
-            <ButtonFill
+            <Button
+              type="fill"
               @click="remotePrompt"
               :disabled="!token"
             >
               Generate script
-            </ButtonFill>
+            </Button>
             <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
               <template v-if="loading">
                 <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -332,9 +332,9 @@ export default {
             />
           </div>
           <div class="mt-4 flex justify-center">
-            <ButtonFill @click="copyPrompt">
+            <Button type="fill" @click="copyPrompt">
               Copy augmented prompt
-            </ButtonFill>
+            </Button>
           </div>
         </template>
 
@@ -357,9 +357,9 @@ export default {
           </div>
         </div>
         <div class="w-full flex flex-row items-center justify-center mt-6">
-          <ButtonFill @click="run">
+          <Button type="fill" @click="run">
             Run script
-          </ButtonFill>
+          </Button>
            
           <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
             <template v-if="executing">
@@ -387,9 +387,9 @@ export default {
              placeholder="Type script title ..."
              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
            >
-          <ButtonOutline @click="saveURL">
+          <Button type="outline" @click="saveURL">
             Generate script URL
-          </ButtonOutline>
+          </Button>
         </div>
       </div>
     </div>
