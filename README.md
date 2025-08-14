@@ -30,7 +30,7 @@ Pyla is currently in beta and works only in Chrome browser. We tested these setu
 
    Remember, LLMs still have their limits. Not every prompt will succeed. Stick to common terms and outline the steps clearly. Any errors appear at the bottom in **Output.**
 
-   A few example prompts below; more are available __here.__
+   A few example prompts below; more are available [here](#quickstart).
 
    `Rotate pdf -90 degrees`
 
