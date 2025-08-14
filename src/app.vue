@@ -261,9 +261,14 @@ export default {
       <Button type="outline" @click="clearAll">
         Clear all form fields
       </Button>
-      <p class="ml-4 text-neutral-500 text-2xl">
+      <a 
+        href="https://github.com/offen/pyla?tab=readme-ov-file#readme" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="ml-4 w-10 h-10 outline-2 outline-neutral-950 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold"
+      >
         ?
-      </p>
+      </a>
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
@@ -428,7 +433,7 @@ export default {
   <footer class="mb-2 mt-20 text-neutral-500">
     <div class="flex justify-between">
       <div class="">
-        July 2025
+        August 2025
       </div>
       <div class="">
         <a href="https://github.com/offen/pyla" target="_blank" rel="noopener" class="no-underline">Source code for this tool</a>
