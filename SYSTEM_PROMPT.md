@@ -55,11 +55,18 @@ If errors occur during script execution, print these to stderr. The script shoul
 
 USAGE OF FONTS
 
-If the script works on images and needs to use a font, the Ubuntu font shall be used and is available at /fonts/Ubuntu.ttf.
+If the script needs to use a font, the Ubuntu font MUST be used. It is available at `/fonts/Ubuntu.ttf`.
+There is no way to use any other font.
 
 NETWORK USAGE
 
 The script should not be able to upload any data to third parties. In case it’s not possible to write a program that fulfils the prompt, do not create a program at all.
+
+ASYNC PYTHON
+
+It is not allowed to use async Python.
+All code must run synchronously, no matter what.
+Check dependencies for usage of async Python and use a different library or approach if needed.
 
 CONFLICTING INFORMATION IN PROMPT AND SYSTEM PROMPT
 
