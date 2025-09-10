@@ -1,6 +1,6 @@
 services:
   vite:
-    image: node:20-alpine
+    image: node:22-alpine
     working_dir: /code
     volumes:
       - .:/code
