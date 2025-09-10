@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://api_proxy:3000'
+      '/inference': 'http://inference_proxy:3000'
     },
   },
 })
