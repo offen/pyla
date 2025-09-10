@@ -5,7 +5,8 @@ export default class RemoteModel {
     this.client = new OpenAI({
       baseURL: 'https://models.github.ai/inference',
       apiKey: token,
-      dangerouslyAllowBrowser: true
+      dangerouslyAllowBrowser: true,
+      timeout: 30 * 1000,
     })
     this.model = model
   }
