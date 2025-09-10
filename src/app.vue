@@ -18,8 +18,6 @@ export default {
       title: '',
       output: [],
       workspaceLocation: '/home/pyodide/pyla',
-      workspaceFs: null,
-      dirHandle: null,
       runtimeError: null,
       connectedModel: Boolean(window.localStorage.getItem('pat_models_token_v1')),
       token: window.localStorage.getItem('pat_models_token_v1') || null,
@@ -195,18 +193,20 @@ export default {
               })
         }
 
-        if (this.isUsingWorkspace && !this.workspaceFs) {
-          const dirHandle = await showDirectoryPicker()
+        let dirHandle = null
+        let workspaceFs = null
+        if (this.isUsingWorkspace) {
+          dirHandle = await showDirectoryPicker()
           const permissionStatus = await dirHandle.requestPermission({
             mode: 'readwrite',
           })
           if (permissionStatus !== 'granted') {
             throw new Error('read/write access to directory not granted')
           }
-          this.dirHandle = dirHandle
-          this.workspaceFs = await this.pyodide.mountNativeFS(this.workspaceLocation, dirHandle)
-        } else if (this.workspaceFs) {
-          await this.workspaceFs.syncfs()
+          workspaceFs = await this.pyodide.mountNativeFS(
+            this.workspaceLocation,
+            dirHandle,
+          )
         }
 
         if (this.isUsingTextInput) {
@@ -216,22 +216,24 @@ export default {
             os.environ['TEXT_INPUT'] = '${textInput}'
           `)
         }
+
         if (this.isUsingFileInput) {
           const [fileHandle] = await showOpenFilePicker({
-            startIn: this.dirHandle
+            startIn: dirHandle
           })
           await this.pyodide.runPython(`
             import os
             os.environ['FILE_INPUT_LOCATION'] = '${this.workspaceLocation}/${fileHandle.name}'
           `)
         }
+
         this.output = []
         const result = await this.pyodide.runPython(this.script)
 
         this.output.push('Script finished')
 
-        if (this.workspaceFs) {
-          await this.workspaceFs.syncfs()
+        if (workspaceFs) {
+          await workspaceFs.syncfs()
         }
       } catch (err) {
         this.output.push(err.message)
