@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Build Docker image and deploy
 
 on:
   push:
@@ -43,3 +43,17 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+  deploy:
+    needs: push_to_registries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Setup SSH
+        run: |
+          ssh-keyscan -H storage.offen.dev >> ~/.ssh/known_hosts
+      - name: Force service update
+        run: |
+          ssh offen@storage.offen.dev -t 'docker service update storage_pyla --force --image ghcr.io/offen/pyla:go-server'
