@@ -3,7 +3,7 @@ name: Build Docker image and deploy
 on:
   push:
     branches:
-      - '*'
+      - 'main'
 
 jobs:
   push_to_registries:
@@ -56,4 +56,4 @@ jobs:
           ssh-keyscan -H storage.offen.dev >> ~/.ssh/known_hosts
       - name: Force service update
         run: |
-          ssh offen@storage.offen.dev -t 'docker service update storage_pyla --force --image ghcr.io/offen/pyla:go-server'
+          ssh offen@storage.offen.dev -t 'docker service update storage_pyla --force --image ghcr.io/offen/pyla:main'
