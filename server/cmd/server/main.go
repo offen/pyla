@@ -1,17 +1,33 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 )
 
 func main() {
-	proxyHandler, err := getProxy()
+
+	ghModelsPAT := os.Getenv("GITHUB_MODELS_PAT")
+	if ghModelsPAT == "" {
+		log.Fatal("GITHUB_MODELS_PAT environment variable not set")
+	}
+
+	ghModelsURL := os.Getenv("GITHUB_MODELS_URL")
+	if ghModelsURL == "" {
+		log.Fatal("GITHUB_MODELS_URL environment variable not set")
+	}
+
+	fairUseToken := os.Getenv("FAIR_USE_TOKEN")
+	if fairUseToken == "" {
+		log.Fatal("FAIR_USE_TOKEN environment variable not set")
+	}
+
+	proxyHandler, err := getProxy(ghModelsPAT, ghModelsURL, fairUseToken)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,18 +43,8 @@ func main() {
 	}
 }
 
-func getProxy() (http.Handler, error) {
-	githubPAT := os.Getenv("GITHUB_MODELS_PAT")
-	if githubPAT == "" {
-		return nil, errors.New("GITHUB_MODELS_PAT environment variable not set")
-	}
-
-	githubModelsURL := os.Getenv("GITHUB_MODELS_URL")
-	if githubModelsURL == "" {
-		return nil, errors.New("GITHUB_MODELS_URL environment variable not set")
-	}
-
-	remote, err := url.Parse(githubModelsURL)
+func getProxy(ghModelsPAT, ghModelsURL, fairUseToken string) (http.Handler, error) {
+	remote, err := url.Parse(ghModelsURL)
 	if err != nil {
 		return nil, fmt.Errorf("Error parsing given URL: %w", err)
 	}
@@ -48,7 +54,9 @@ func getProxy() (http.Handler, error) {
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
 		originalDirector(req)
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", githubPAT))
+		if strings.HasSuffix(req.Header.Get("Authorization"), fairUseToken) {
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", ghModelsPAT))
+		}
 		req.Host = remote.Host
 	}
 
