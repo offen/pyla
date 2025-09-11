@@ -10,5 +10,10 @@ export default defineConfig({
     alias: {
       vue: 'vue/dist/vue.esm-bundler.js',
     }
-  }
+  },
+  server: {
+    proxy: {
+      '/inference': 'http://inference_proxy:3000'
+    },
+  },
 })

@@ -1,0 +1,7 @@
+node_modules
+dist
+.github
+README.md
+LICENSE
+Makefile
+.env

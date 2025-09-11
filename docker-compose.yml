@@ -1,6 +1,6 @@
 services:
   vite:
-    image: node:20-alpine
+    image: node:22-alpine
     working_dir: /code
     volumes:
       - .:/code
@@ -8,6 +8,17 @@ services:
     ports:
       - 5173:5173
     command: npm run dev -- --host
+  inference_proxy:
+    env_file: .env
+    image: golang:1.25-alpine
+    working_dir: /code
+    environment:
+      GITHUB_MODELS_URL: https://models.github.ai
+      FAIR_USE_TOKEN: pyla-fair-use
+      PORT: '3000'
+    volumes:
+      - ./server:/code
+    command: go run cmd/server/main.go
 
 volumes:
   vite_deps:
