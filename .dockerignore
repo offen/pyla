@@ -4,3 +4,4 @@ dist
 README.md
 LICENSE
 Makefile
+.env

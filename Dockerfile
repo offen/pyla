@@ -24,8 +24,8 @@ COPY --from=frontend-builder /code/dist /var/www/html/pyla
 COPY --from=backend-builder /code/pyla /sbin/pyla
 RUN setcap CAP_NET_BIND_SERVICE=+eip /sbin/pyla
 
-ENV PORT 80
-EXPOSE 80
+ENV PORT=3000
+EXPOSE 3000
 
 ENTRYPOINT ["/sbin/tini", "--", "pyla"]
 

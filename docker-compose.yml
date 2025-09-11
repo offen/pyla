@@ -15,6 +15,7 @@ services:
     environment:
       GITHUB_MODELS_URL: https://models.github.ai
       FAIR_USE_TOKEN: pyla-fair-use
+      PORT: '3000'
     volumes:
       - ./server:/code
     command: go run cmd/server/main.go
