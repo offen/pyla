@@ -92,7 +92,7 @@ export default {
             urlState[key] = urlData[key]
           }
         }
-      } catch {}
+      } catch { }
       return urlState
     },
     handleHashChange() {
@@ -123,7 +123,7 @@ export default {
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
-    async remotePrompt () {
+    async remotePrompt() {
       const remoteModel = new RemoteModel(this.token)
       this.loading = true
       try {
@@ -146,14 +146,14 @@ export default {
       // Resetting lastIndex for safety, though it should be at 0 for a new search
       REGEX.lastIndex = 0
       while ((match = REGEX.exec(script)) !== null) {
-          // match[1] corresponds to the 'type' named group in Python
-          if (match[1] === name) {
-              matches.push(match)
-          }
+        // match[1] corresponds to the 'type' named group in Python
+        if (match[1] === name) {
+          matches.push(match)
+        }
       }
 
       if (matches.length > 1) {
-          throw new Error(`Multiple ${name} blocks found`)
+        throw new Error(`Multiple ${name} blocks found`)
       } else if (matches.length === 1) {
         // matches[0][2] corresponds to the 'content' named group in Python
         const contentRaw = matches[0][2]
@@ -161,12 +161,12 @@ export default {
         // Process content lines: remove '# ' or '#' prefix
         const contentLines = contentRaw.split(/\r?\n|\r/);
         const processedContent = contentLines.map(line => {
-            if (line.startsWith('# ')) {
-                return line.substring(2)
-            } else if (line.startsWith('#')) {
-                return line.substring(1)
-            }
-            return line; // Should not happen if regex is correct, but for safety
+          if (line.startsWith('# ')) {
+            return line.substring(2)
+          } else if (line.startsWith('#')) {
+            return line.substring(1)
+          }
+          return line; // Should not happen if regex is correct, but for safety
         }).join('\n') // Join with '\n' as tomllib expects standard newlines
 
         try {
@@ -176,7 +176,7 @@ export default {
           throw new Error(`Error parsing TOML content in '${name}' block: ${e.message}`)
         }
       } else {
-          return null
+        return null
       }
     },
     async run() {
@@ -185,12 +185,12 @@ export default {
         const metadata = this.parseMetadata(this.script)
         if (metadata && Array.isArray(metadata.dependencies) && metadata.dependencies.length) {
           await this.pyodide.loadPackage('micropip')
-              .then(() => this.pyodide.pyimport('micropip'))
-              .then(async micropip => {
-                for (const req of metadata.dependencies) {
-                  await micropip.install(req)
-                }
-              })
+            .then(() => this.pyodide.pyimport('micropip'))
+            .then(async micropip => {
+              for (const req of metadata.dependencies) {
+                await micropip.install(req)
+              }
+            })
         }
 
         let dirHandle = null
@@ -255,31 +255,25 @@ export default {
       </h1>
     </div>
 
-    <div class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-4 self-center text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
+    <div
+      class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-4 self-center text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
       <p>Workspace location: <span v-if="localWorkspacePath" class="font-semibold">{{ localWorkspacePath }}</span></p>
     </div>
 
-    <div class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
+    <div
+      class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
       <Button type="outline" @click="clearAll">
         Clear all form fields
       </Button>
-      <a 
-        href="https://github.com/offen/pyla?tab=readme-ov-file#readme" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        class="ml-4 w-10 h-10 outline-2 outline-neutral-950 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold"
-      >
+      <a href="https://github.com/offen/pyla?tab=readme-ov-file#readme" target="_blank" rel="noopener noreferrer"
+        class="ml-4 w-10 h-10 outline-2 outline-neutral-950 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold">
         ?
       </a>
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
-      <TextArea
-        type="lightinput"
-        class="placeholder:text-neutral-950"
-        placeholder="What do you want to do?"
-        v-model="prompt"
-      />
+      <TextArea type="lightinput" class="placeholder:text-neutral-950" placeholder="What do you want to do?"
+        v-model="prompt" />
     </div>
 
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
@@ -293,16 +287,12 @@ export default {
           </label>
           <span>Connected model</span>
         </div>
-     
+
         <div v-if="connectedModel" class="bg-neutral-200 rounded-lg flex flex-col items-center">
           <div class="w-full flex flex-row items-center justify-center mt-6">
-            <input
-              v-model="tokenInput"
-              type="text"
-              :disabled="token"
+            <input v-model="tokenInput" type="text" :disabled="token"
               :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models ...'"
-              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
-            >
+              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500">
             <Button type="outline" v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
               Provide token
             </Button>
@@ -311,18 +301,18 @@ export default {
             </Button>
           </div>
           <div class="w-full flex flex-row items-center justify-center mt-6">
-            <Button
-              type="fill"
-              @click="remotePrompt"
-              :disabled="!token"
-            >
+            <Button type="fill" @click="remotePrompt" :disabled="!token">
               Generate script
             </Button>
-            <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+            <span
+              class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
               <template v-if="loading">
-                <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
                 </svg>
               </template>
               <template v-else></template>
@@ -332,11 +322,7 @@ export default {
 
         <template v-if="!connectedModel">
           <div class="mt-6">
-            <TextArea
-              type="light"
-              v-model="augmentedPrompt"
-              readonly
-            />
+            <TextArea type="light" v-model="augmentedPrompt" readonly />
           </div>
           <div class="mt-4 flex justify-center">
             <Button type="fill" @click="copyPrompt">
@@ -356,23 +342,25 @@ export default {
         </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-4 lg:col-span-8">
-            <TextArea
-              type="dark"
+            <TextArea type="dark"
               :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
-              v-model="script"
-            />
+              v-model="script" />
           </div>
         </div>
         <div class="w-full flex flex-row items-center justify-center mt-6">
           <Button type="fill" @click="run">
             Run script
           </Button>
-           
-          <span class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+
+          <span
+            class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
             <template v-if="executing">
-              <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
               </svg>
             </template>
             <template v-else></template>
@@ -388,12 +376,8 @@ export default {
         </p>
         <div class="w-full flex flex-row items-center justify-center gap-4">
           <!-- script title become website title as well, is also saved in URL -->
-          <input
-             v-model="title"
-             type="text"
-             placeholder="Type script title ..."
-             class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500"
-           >
+          <input v-model="title" type="text" placeholder="Type script title ..."
+            class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500">
           <Button type="outline" @click="saveURL">
             Generate script URL
           </Button>
@@ -406,39 +390,43 @@ export default {
         Output
       </p>
       <div class="rounded-lg p-3 bg-neutral-50">
-          <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
-          <pre v-else class="font-mono">Output goes here ...</pre>
+        <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
+        <pre v-else class="font-mono">Output goes here ...</pre>
       </div>
     </div>
 
   </div>
 
   <div v-else class="order-9 flex flex-row items-center">
-      <div class="font-semibold text-2xl">
-        <h1>
-          Pyla
-        </h1>
-      </div>
-      <div class="w-10 h-10 outline-2 outline-neutral-400 bg-neutral-400 rounded-lg flex items-center justify-center ml-6">
-        <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
-      <div class="h-10 text-neutral-500 flex items-center ml-6">
-        <p>
-          Python runtime is initializing ...
-        </p>
-      </div>
+    <div class="font-semibold text-2xl">
+      <h1>
+        Pyla
+      </h1>
+    </div>
+    <div
+      class="w-10 h-10 outline-2 outline-neutral-400 bg-neutral-400 rounded-lg flex items-center justify-center ml-6">
+      <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+        </path>
+      </svg>
+    </div>
+    <div class="h-10 text-neutral-500 flex items-center ml-6">
+      <p>
+        Python runtime is initializing ...
+      </p>
+    </div>
   </div>
 
   <footer class="mb-2 mt-20 text-neutral-500">
     <div class="flex justify-between">
       <div class="">
-        August 2025
+        September 2025
       </div>
       <div class="">
-        <a href="https://github.com/offen/pyla" target="_blank" rel="noopener" class="no-underline">Source code for this tool</a>
+        <a href="https://github.com/offen/pyla" target="_blank" rel="noopener" class="no-underline">Source code for this
+          tool</a>
       </div>
     </div>
   </footer>

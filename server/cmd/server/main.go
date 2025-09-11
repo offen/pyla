@@ -77,6 +77,7 @@ func getProxy(ghModelsPAT, ghModelsURL, fairUseToken string) (http.Handler, erro
 	proxy.Director = func(req *http.Request) {
 		originalDirector(req)
 		if strings.HasSuffix(req.Header.Get("Authorization"), fairUseToken) {
+			log.Print("Proxying inference request using fair use token")
 			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", ghModelsPAT))
 		}
 		req.Host = remote.Host
