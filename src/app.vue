@@ -125,12 +125,13 @@ export default {
     },
     async remotePrompt() {
       const remoteModel = new RemoteModel(this.token)
+      this.runtimeError = null
       this.loading = true
       try {
         const { script } = await remoteModel.query(this.prompt, systemPrompt)
         this.script = script
       } catch (err) {
-        this.runtimeError = new Error(`Error prompting remote model: ${err.message}`)
+        this.runtimeError = new Error(`Failed prompting remote model: ${err.message}`)
       } finally {
         this.loading = false
       }
@@ -256,11 +257,6 @@ export default {
     </div>
 
     <div
-      class="order-3 md:order-3 lg:order-2 col-span-2 md:col-span-4 lg:col-span-4 self-center text-neutral-500 bg-neutral-200 rounded-lg px-4 py-2 inline-flex w-fit">
-      <p>Workspace location: <span v-if="localWorkspacePath" class="font-semibold">{{ localWorkspacePath }}</span></p>
-    </div>
-
-    <div
       class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
       <Button type="outline" @click="clearAll">
         Clear all form fields
@@ -269,6 +265,10 @@ export default {
         class="ml-4 w-10 h-10 outline-2 outline-neutral-950 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold">
         ?
       </a>
+    </div>
+
+    <div v-if="globalError" class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
+      {{ globalError }}
     </div>
 
     <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
