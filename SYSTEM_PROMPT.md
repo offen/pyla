@@ -55,8 +55,14 @@ If errors occur during script execution, print these to stderr. The script shoul
 
 USAGE OF FONTS
 
-If the script needs to use a font, the Ubuntu font MUST be used. It is available at `/fonts/Ubuntu.ttf`.
-There is no way to use any other font.
+- Prefer Ubuntu if available: /fonts/Ubuntu.ttf.
+- Before using it, CHECK that the file exists (os.path.exists). 
+- If it does not exist, DO NOT fail the program. Fall back to a built-in core font
+  (e.g., 'Helvetica' in fpdf2) so the script always produces output.
+- Do NOT pass deprecated parameters to fpdf2 (e.g., avoid add_font(..., uni=True)).
+- If non-Latin text is expected (e.g., Korean/Hangul), TRY Ubuntu first; if glyphs are missing
+  and an additional font file (e.g., /fonts/NanumGothic.ttf) is present, prefer that.
+  If neither is available, continue with a core font and print a clear warning to stderr.
 
 NETWORK USAGE
 
