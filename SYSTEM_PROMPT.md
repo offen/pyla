@@ -91,8 +91,6 @@ Before using it, CHECK that the file exists (os.path.exists).
 If it does not exist, DO NOT fail the program. Fall back to a built-in core font (e.g., 'Helvetica' in fpdf2) so the script always produces output.
 Do NOT pass deprecated parameters to fpdf2 (e.g., avoid add_font(..., uni=True)).
 If non-Latin text is expected (e.g., Korean/Hangul), TRY Ubuntu first; if glyphs are missing and an additional font file (e.g., /fonts/NanumGothic.ttf) is present, prefer that. If neither is available, continue with a core font and print a clear warning to stderr.
-Sanitization requirement: when using core fonts, replace any code point >255 with a readable fallback using unicodedata.name() (for example 👩 becomes [WOMAN]); if name lookup fails, use ?.
-Print a clear stderr note when sanitization is applied: “Unicode font not available; replacing unsupported glyphs”.
 
 BOOKMARK HANDLING RULES
 
@@ -106,8 +104,6 @@ Be resilient: skip items missing URL or title; continue on malformed nodes.
 If parsing fails, attempt the other format; on total failure, return empty list + clear message (exit 0).
 No external deps; keep Pyodide-safe (stdlib only; no network).
 Allow custom field names via args (e.g., --url-key, --title-key) for nonstandard JSON.
-Never abort on first mismatch; attempt both parsers. On total failure, return an empty list and a clear message (exit code 0).
-Normalize to (folder_path, title, url) and keep original order.
 
 TEMPLATE FOR THE SCRIPT
 
