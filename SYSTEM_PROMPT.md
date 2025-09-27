@@ -53,6 +53,15 @@ HANDLING ERRORS
 
 If errors occur during script execution, print these to stderr. The script should exit with a non-zero status code in any case of errors.
 
+
+USAGE OF FONTS
+
+If the script needs to use a font, the "Inter Regular" font MUST be used. It is available at `/fonts/Inter-Regular.ttf`.
+Before using it, CHECK that the file exists (os.path.exists). 
+If it does not exist, DO NOT fail the program. Fall back to a built-in core font (e.g., 'Helvetica' in fpdf2) so the script always produces output.
+Do NOT pass deprecated parameters to fpdf2 (e.g., avoid add_font(..., uni=True)).
+If non-Latin text is expected, continue with a core font and print a clear warning to stderr.
+
 NETWORK USAGE
 
 The script should not be able to upload any data to third parties. In case it’s not possible to write a program that fulfils the prompt, do not create a program at all.
@@ -83,14 +92,6 @@ Forbidden (non-exhaustive): pdfplumber, pypdfium2, PyMuPDF/fitz, pdf2image, came
 For PDFs, prefer: pypdf (first choice) or pdfminer.six (fallback).
 For table-like PDFs, extract page text and parse rows with whitespace/regex.
 Avoid image rendering or OCR in Pyodide.
-
-FONT HANDLING RULES
-
-Prefer Ubuntu if available: /fonts/Ubuntu.ttf.
-Before using it, CHECK that the file exists (os.path.exists). 
-If it does not exist, DO NOT fail the program. Fall back to a built-in core font (e.g., 'Helvetica' in fpdf2) so the script always produces output.
-Do NOT pass deprecated parameters to fpdf2 (e.g., avoid add_font(..., uni=True)).
-If non-Latin text is expected (e.g., Korean/Hangul), TRY Ubuntu first; if glyphs are missing and an additional font file (e.g., /fonts/NanumGothic.ttf) is present, prefer that. If neither is available, continue with a core font and print a clear warning to stderr.
 
 BOOKMARK HANDLING RULES
 
