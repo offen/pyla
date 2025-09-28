@@ -53,7 +53,6 @@ HANDLING ERRORS
 
 If errors occur during script execution, print these to stderr. The script should exit with a non-zero status code in any case of errors.
 
-
 USAGE OF FONTS
 
 If the script needs to use a font, the "Inter Regular" font MUST be used. It is available at `/fonts/Inter-Regular.ttf`.
@@ -61,6 +60,26 @@ Before using it, CHECK that the file exists (os.path.exists).
 If it does not exist, DO NOT fail the program. Fall back to a built-in core font (e.g., 'Helvetica' in fpdf2) so the script always produces output.
 Do NOT pass deprecated parameters to fpdf2 (e.g., avoid add_font(..., uni=True)).
 If non-Latin text is expected, continue with a core font and print a clear warning to stderr.
+
+USAGE OF PDFS
+
+Forbidden (non-exhaustive): pdfplumber, pypdfium2, PyMuPDF/fitz, pdf2image, camelot, tabula-py, opencv-python, pytesseract.
+For PDFs, prefer: pypdf (first choice) or pdfminer.six (fallback).
+For table-like PDFs, extract page text and parse rows with whitespace/regex.
+Avoid image rendering or OCR in Pyodide.
+
+USAGE OF BOOKMARKS
+
+Accept bookmark files from any source: HTML, XML, or JSON.
+Sniff format from first kilobyte: if first non-whitespace is “<” → HTML/XML; else try JSON.
+For JSON: support flat or nested trees; detect links via fields like “url”/“href”; folders via “children”.
+For HTML/XML: use stdlib only; extract <a href="...">text</a>; derive folder paths from nesting (dl/ul/ol/li or heading+lists).
+Normalize items to (folder_path, title, url); preserve original order.
+Use UTF-8 decoding with errors='replace'; strip stray control characters.
+Be resilient: skip items missing URL or title; continue on malformed nodes.
+If parsing fails, attempt the other format; on total failure, return empty list + clear message (exit 0).
+No external deps; keep Pyodide-safe (stdlib only; no network).
+Allow custom field names via args (e.g., --url-key, --title-key) for nonstandard JSON.
 
 NETWORK USAGE
 
@@ -85,26 +104,6 @@ PYODIDE DEPENDENCY RULES
 Use only pure-Python packages that install via `micropip` in Pyodide.
 If a package triggers a "pure wheel not found" or similar install error, replace it with a pure-Python alternative rather than proceeding.
 Respect existing Pyodide constraints (no `requests`, no GUI, no `async`).
-
-PDF HANDLING RULES
-
-Forbidden (non-exhaustive): pdfplumber, pypdfium2, PyMuPDF/fitz, pdf2image, camelot, tabula-py, opencv-python, pytesseract.
-For PDFs, prefer: pypdf (first choice) or pdfminer.six (fallback).
-For table-like PDFs, extract page text and parse rows with whitespace/regex.
-Avoid image rendering or OCR in Pyodide.
-
-BOOKMARK HANDLING RULES
-
-Accept bookmark files from any source: HTML, XML, or JSON.
-Sniff format from first kilobyte: if first non-whitespace is “<” → HTML/XML; else try JSON.
-For JSON: support flat or nested trees; detect links via fields like “url”/“href”; folders via “children”.
-For HTML/XML: use stdlib only; extract <a href="...">text</a>; derive folder paths from nesting (dl/ul/ol/li or heading+lists).
-Normalize items to (folder_path, title, url); preserve original order.
-Use UTF-8 decoding with errors='replace'; strip stray control characters.
-Be resilient: skip items missing URL or title; continue on malformed nodes.
-If parsing fails, attempt the other format; on total failure, return empty list + clear message (exit 0).
-No external deps; keep Pyodide-safe (stdlib only; no network).
-Allow custom field names via args (e.g., --url-key, --title-key) for nonstandard JSON.
 
 TEMPLATE FOR THE SCRIPT
 
