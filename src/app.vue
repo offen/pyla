@@ -77,6 +77,10 @@ export default {
       this.pyodide.setStdin({ error: true })
       this.pyodide.setStdout({ batched: (msg) => this.output.push(msg) })
       this.pyodide.setStderr({ batched: (msg) => this.output.push(msg) })
+
+      let zipResponse = await fetch(`${window.location.origin}/inter/inter-font.zip`);
+      let zipBinary = await zipResponse.arrayBuffer();
+      this.pyodide.unpackArchive(zipBinary, 'zip', { extractDir: '/fonts' });
     } catch (err) {
       this.pyodide = err
     }
