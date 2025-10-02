@@ -235,11 +235,11 @@ export default {
         this.output = []
         const result = await this.pyodide.runPython(this.script)
 
-        this.output.push('Script finished')
-
         if (workspaceFs) {
           await workspaceFs.syncfs()
         }
+
+        this.output.push('Script finished')
       } catch (err) {
         this.output.push(err.message)
       } finally {
