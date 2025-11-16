@@ -447,8 +447,8 @@ export default {
     <!-- OUTPUT -->  
     <div class="order-9 col-span-2 md:col-span-4 lg:col-span-8">
       <div class="rounded-lg p-3 bg-neutral-200 text-neutral-500">
-        <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
-        <pre v-else class="font-mono">Output goes here ...</pre>
+        <pre v-if="output.length" class="break-all whitespace-pre-wrap">{{ output.join('\n') }}</pre>
+        <pre v-else class="break-all whitespace-pre-wrap">Output goes here ...</pre>
       </div>
     </div>
 
