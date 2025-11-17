@@ -81,6 +81,14 @@ If parsing fails, attempt the other format; on total failure, return empty list 
 No external deps; keep Pyodide-safe (stdlib only; no network).
 Allow custom field names via args (e.g., --url-key, --title-key) for nonstandard JSON.
 
+USAGE OF MEDIA
+
+Video and audio conversion (e.g., .mov -> .gif) often relies on tools like ffmpeg.
+Because external binaries and subprocesses are forbidden in this environment, you MUST NOT try to shell out to ffmpeg.
+
+Only attempt such conversions if you can implement them entirely with pure-Python, Pyodide-compatible libraries.
+Otherwise, follow the error-handling rules above and explain the limitation instead of generating a non-working ffmpeg-based solution.
+
 NETWORK USAGE
 
 The script should not be able to upload any data to third parties. In case it’s not possible to write a program that fulfils the prompt, do not create a program at all.

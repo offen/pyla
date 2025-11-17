@@ -24,6 +24,7 @@ export default {
       tokenInput: '',
       loading: false,
       executing: false,
+      mode: 'fair',
     }, this.parseUrlState())
   },
   computed: {
@@ -55,6 +56,13 @@ export default {
       return this.token
         ? `${this.token.substr(0, 3)}...${this.token.slice(-3)}`
         : null
+    },
+    availableModes() {
+      return [
+        { value: 'fair', label: 'Fair use' },
+        { value: 'connected', label: 'Connected model' },
+        { value: 'augmented', label: 'Augmented prompt' }
+      ]
     }
   },
   watch: {
@@ -123,12 +131,15 @@ export default {
     clearAll() {
       this.script = ''
       this.prompt = ''
+      this.title = ''
     },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
     async remotePrompt() {
-      const remoteModel = new RemoteModel(this.token)
+      const remoteModel = this.mode === 'fair'
+        ? new RemoteModel()
+        : new RemoteModel(this.token)
       this.runtimeError = null
       this.loading = true
       try {
@@ -251,103 +262,162 @@ export default {
 </script>
 
 <template>
+  <div id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
 
-  <div v-if="pyodide" id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-
-    <div class="order-1 col-span-2 md:col-span-2 lg:col-span-1 self-center font-semibold text-2xl">
-      <h1>
-        Pyla
-      </h1>
+    <!-- HARD RELOAD (TEMP) -->
+    <div class="order-1 col-span-2 md:col-span-2 lg:col-span-1 self-center">
+      <a href="https://pyla.offen.dev/">
+        <h1 class="font-semibold text-2xl inline-block">
+          Pyla
+        </h1>
+      </a>
     </div>
 
+    <template v-if="pyodide">
     <div
-      class="order-2 md:order-2 lg:order-3 col-span-2 md:col-span-2 lg:col-span-3 self-center flex flex-row justify-end items-center space-x-2">
+      class="order-2 md:order-2 lg:order-3 col-span-2 lg:col-span-7 self-center flex flex-row justify-end items-center space-x-2">
       <Button type="outline" @click="clearAll">
-        Clear all form fields
+        Clear form fields
       </Button>
       <a href="https://github.com/offen/pyla?tab=readme-ov-file#readme" target="_blank" rel="noopener noreferrer"
-        class="ml-4 w-10 h-10 outline-2 outline-neutral-950 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold">
+        class="ml-4 w-10 h-10 text-neutral-500 outline-2 outline-neutral-500 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold">
         ?
       </a>
     </div>
 
-    <div v-if="globalError" class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
-      {{ globalError }}
-    </div>
-
-    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-10">
+    <!-- PROMPT -->
+    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-6">
       <TextArea type="lightinput" class="placeholder:text-neutral-950" placeholder="What do you want to do?"
         v-model="prompt" />
     </div>
 
+    <!-- GENERATE SCRIPT -->
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+      <div class="flex flex-col">
 
-      <div class="bg-neutral-200 rounded-lg p-4">
-        <div class="flex items-center gap-4">
-          <span>Augmented prompt</span>
-          <label class="toggle-label" style="margin-bottom: 0;">
-            <input type="checkbox" v-model="connectedModel" class="toggle-checkbox">
-            <span class="toggle-slider"></span>
-          </label>
-          <span>Connected model</span>
-        </div>
-
-        <div v-if="connectedModel" class="bg-neutral-200 rounded-lg flex flex-col items-center">
-          <div class="w-full flex flex-row items-center justify-center mt-6">
-            <input v-model="tokenInput" type="text" :disabled="token"
-              :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models ...'"
-              class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500">
-            <Button type="outline" v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
-              Provide token
-            </Button>
-            <Button type="outline" v-if="token" @click="deleteToken" class="ml-4">
-              Disconnect
-            </Button>
-          </div>
-          <div class="w-full flex flex-row items-center justify-center mt-6">
-            <Button type="fill" @click="remotePrompt" :disabled="!token">
-              Generate script
-            </Button>
-            <span
-              class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
-              <template v-if="loading">
-                <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                  </path>
-                </svg>
-              </template>
-              <template v-else></template>
+        <!-- labels -->
+        <div class="flex flex-wrap gap-2">
+          <label v-for="option in availableModes" :key="option.value"
+            class="rounded-t-lg px-4 py-2 cursor-pointer transition-colors text-neutral-950"
+            :class="mode === option.value ? 'bg-neutral-200' : 'bg-neutral-300'">
+            <input type="radio" class="sr-only" :value="option.value" v-model="mode">
+            <span class="flex items-center gap-2 my-1">
+              <span class="flex h-4 w-4 items-center justify-center rounded-full outline outline-2 outline-neutral-950"
+                :class="mode === option.value ? 'bg-neutral-200' : 'bg-neutral-300'">
+                <span v-if="mode === option.value" class="h-2 w-2 rounded-full bg-neutral-950"></span>
+              </span>
+              <span class="text-sm font-medium">{{ option.label }}</span>
             </span>
-          </div>
+          </label>
         </div>
 
-        <template v-if="!connectedModel">
-          <div class="mt-6">
-            <TextArea type="light" v-model="augmentedPrompt" readonly />
-          </div>
-          <div class="mt-4 flex justify-center">
-            <Button type="fill" @click="copyPrompt">
-              Copy augmented prompt
-            </Button>
-          </div>
-        </template>
+        <!-- cards -->
+        <div class="rounded-lg rounded-tl-none bg-neutral-200 p-4">
 
+          <template v-if="mode === 'fair'">
+            <p class="text-neutral-700 mt-2">
+              We're offering limited free access to OpenAI GPT-4.1 for all test users.
+            </p>
+            <div class="w-full flex flex-row items-center justify-center mt-6">
+              <Button type="fill" @click="remotePrompt" :disabled="loading">
+                Generate script
+              </Button>
+              <span
+                class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+                <template v-if="loading">
+                  <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                </template>
+                <template v-else></template>
+              </span>
+            </div>
+          </template>
+
+          <template v-else-if="mode === 'connected'">
+            <div class="flex flex-col items-center">
+              <div class="w-full flex flex-row items-center justify-center">
+                <input v-model="tokenInput" type="text" :disabled="token"
+                  :placeholder="token ? tokenDisplay : 'Paste personal access token for GitHub Models ...'"
+                  class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-100 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500">
+                <Button type="outline" v-if="!token" @click="provideToken" class="cursor-pointer ml-4">
+                  Provide token
+                </Button>
+                <Button type="outline" v-if="token" @click="deleteToken" class="ml-4">
+                  Disconnect
+                </Button>
+              </div>
+              <div class="w-full flex flex-row items-center justify-center mt-6">
+                <Button type="fill" @click="remotePrompt" :disabled="!token || loading">
+                  Generate script
+                </Button>
+                <span
+                  class="w-10 h-10 ml-2 outline-2 outline-neutral-400 bg-neutral-400 text-neutral-500 rounded-lg flex items-center justify-center">
+                  <template v-if="loading">
+                    <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                      viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                      </path>
+                    </svg>
+                  </template>
+                  <template v-else></template>
+                </span>
+              </div>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="mt-0">
+              <TextArea type="light" v-model="augmentedPrompt" readonly />
+            </div>
+            <div class="mt-4 flex justify-center">
+              <Button type="fill" @click="copyPrompt">
+                Copy augmented prompt
+              </Button>
+            </div>
+          </template>
+
+        </div>
       </div>
     </div>
 
-    <div class="order-6 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
+    <!-- ERROR -->
+    <div v-if="globalError" class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+      <div class="bg-neutral-200 rounded-lg p-4 text-red-700">
+        <p class="font-mono break-words">
+          {{ globalError }}
+        </p>
+      </div>
+    </div>
+
+    <!-- BOOKMARK -->
+    <div class="order-7 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
+      <div class="bg-neutral-200 rounded-lg p-4">
+        <div class="w-full flex flex-row items-center justify-center gap-4">
+          <!-- script title become website title as well, is also saved in URL -->
+          <input v-model="title" type="text" placeholder="Type script title ..."
+            class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500">
+          <Button type="outline" @click="saveURL">
+            Generate script URL
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RUN SCRIPT -->
+    <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-8">
 
       <div class="bg-neutral-200 rounded-lg p-4">
-        <p>
-          Script
-        </p>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-4 lg:col-span-8">
             <TextArea type="dark"
-              :placeholder="connectedModel ? 'Script from connected model goes here ...' : 'Paste script from LLM ...'"
+              :placeholder="mode=== 'augmented' ? 'Paste script from LLM ...' : 'Script goes here ...'"
               v-model="script" />
           </div>
         </div>
@@ -373,60 +443,40 @@ export default {
       </div>
     </div>
 
-    <div class="order-7 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
-      <div class="bg-neutral-200 rounded-lg p-4">
-        <p class="mb-2">
-          Bookmark
-        </p>
-        <div class="w-full flex flex-row items-center justify-center gap-4">
-          <!-- script title become website title as well, is also saved in URL -->
-          <input v-model="title" type="text" placeholder="Type script title ..."
-            class="flex-1 min-w-0 px-4 py-2 rounded-lg bg-neutral-50 text-neutral-950 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:bg-neutral-100 disabled:text-neutral-500">
-          <Button type="outline" @click="saveURL">
-            Generate script URL
-          </Button>
+    <!-- OUTPUT -->
+    <div class="order-9 col-span-2 md:col-span-4 lg:col-span-8">
+      <div class="rounded-lg p-3 bg-neutral-200 text-neutral-500">
+        <pre v-if="output.length" class="break-all whitespace-pre-wrap">{{ output.join('\n') }}</pre>
+        <pre v-else class="break-all whitespace-pre-wrap">Output goes here ...</pre>
+      </div>
+    </div>
+
+    </template>
+    <template v-else>
+      <div class="order-2 col-span-2 md:col-span-4 lg:col-span-7 lg:col-start-2 flex flex-row items-center">
+        <div
+          class="w-10 h-10 outline-2 outline-neutral-400 bg-neutral-400 rounded-lg flex items-center justify-center ml-6 md:ml-0">
+          <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </div>
+        <div class="h-10 text-neutral-500 flex items-center ml-6">
+          <p>
+            Python runtime is initializing ...
+          </p>
         </div>
       </div>
-    </div>
+    </template>
 
-    <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-10">
-      <p class="mb-2">
-        Output
-      </p>
-      <div class="rounded-lg p-3 bg-neutral-50">
-        <pre v-if="output.length" class="font-mono">{{ output.join('\n') }}</pre>
-        <pre v-else class="font-mono">Output goes here ...</pre>
-      </div>
-    </div>
-
-  </div>
-
-  <div v-else class="order-9 flex flex-row items-center">
-    <div class="font-semibold text-2xl">
-      <h1>
-        Pyla
-      </h1>
-    </div>
-    <div
-      class="w-10 h-10 outline-2 outline-neutral-400 bg-neutral-400 rounded-lg flex items-center justify-center ml-6">
-      <svg class="size-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-        </path>
-      </svg>
-    </div>
-    <div class="h-10 text-neutral-500 flex items-center ml-6">
-      <p>
-        Python runtime is initializing ...
-      </p>
-    </div>
   </div>
 
   <footer class="mb-2 mt-20 text-neutral-500">
     <div class="flex justify-between">
       <div class="">
-        September 2025
+        November 2025
       </div>
       <div class="">
         <a href="https://github.com/offen/pyla" target="_blank" rel="noopener" class="no-underline">Source code for this
