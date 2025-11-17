@@ -40,15 +40,19 @@ Pyla is currently in beta and works only in Chrome browser. We tested these setu
 
 3. **Choose workflow**
 
-   *Augmented prompt:* 
+   *Fair use* 
+
+   Test users have limited, shared free access to the OpenAI GPT-4.1 model for code generation. Simply click **Generate script** to create your mini-app. When the daily quota for all users is reached, this option is no longer available.
+
+   *Connected model* 
+
+   Working with GitHub? Create a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token), paste it into **Paste personal access token for GitHub Models**, and hit **Provide token**. Once connected, hit **Generate script** and your mini-app is created automatically.
+
+   *Augmented prompt* 
 
    Click **Copy augmented prompt** and paste it into your preferred LLM. Bring back the code snippet it generates and paste it into the **Script** window.
 
-   *Connected model:* 
 
-   Working with GitHub? Create a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token), paste it into **Paste personal access token for GitHub Models**, and hit **Provide token**. 
-
-   Once connected, hit **Generate script** and your mini-app is created automatically.
 
 4. **Run your mini-app**
 
