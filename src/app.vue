@@ -132,12 +132,10 @@ export default {
       this.token = null
       window.localStorage.removeItem('pat_models_token_v1')
     },
-    reloadPage() {
-      window.location.reload()
-    },
     clearAll() {
       this.script = ''
       this.prompt = ''
+      this.title = ''
     },
     async copyPrompt() {
       await navigator.clipboard.writeText(this.augmentedPrompt)
@@ -271,8 +269,9 @@ export default {
 <template>
   <div id="container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
 
+    <!-- HARD RELOAD (TEMP) -->
     <div class="order-1 col-span-2 md:col-span-2 lg:col-span-1 self-center">
-      <a href="#" @click.prevent="reloadPage">
+      <a href="https://pyla.offen.dev/">
         <h1 class="font-semibold text-2xl inline-block">
           Pyla
         </h1>
@@ -283,16 +282,16 @@ export default {
     <div
       class="order-2 md:order-2 lg:order-3 col-span-2 lg:col-span-7 self-center flex flex-row justify-end items-center space-x-2">
       <Button type="outline" @click="clearAll">
-        Clear all form fields
+        Clear form fields
       </Button>
       <a href="https://github.com/offen/pyla?tab=readme-ov-file#readme" target="_blank" rel="noopener noreferrer"
-        class="ml-4 w-10 h-10 outline-2 outline-neutral-950 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold">
+        class="ml-4 w-10 h-10 text-neutral-500 outline-2 outline-neutral-500 bg-transparent rounded-full flex items-center justify-center text-2xl font-semibold">
         ?
       </a>
     </div>
 
     <!-- PROMPT -->
-    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-8">
+    <div class="order-4 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6 mt-6">
       <TextArea type="lightinput" class="placeholder:text-neutral-950" placeholder="What do you want to do?"
         v-model="prompt" />
     </div>
@@ -423,7 +422,7 @@ export default {
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-4 lg:col-span-8">
             <TextArea type="dark"
-              :placeholder="generateMode === 'augmented' ? 'Paste script from LLM ...' : 'Script from the selected mode goes here ...'"
+              :placeholder="generateMode === 'augmented' ? 'Paste script from LLM ...' : 'Script goes here ...'"
               v-model="script" />
           </div>
         </div>
