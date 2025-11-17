@@ -61,7 +61,7 @@ export default {
     },
     // --- TEMP ---------------------------
     generateModeOptions() {
-      return [{ value: 'fair', label: 'Fair use' }, { value: 'connected', label: 'Connected' }, { value: 'augmented', label: 'Augmented' }]
+      return [{ value: 'fair', label: 'Fair use' }, { value: 'connected', label: 'Connected model' }, { value: 'augmented', label: 'Augmented prompt' }]
     },
     generateMode: {
       get() { return this._generateMode || 'augmented' },
