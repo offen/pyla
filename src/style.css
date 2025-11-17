@@ -1,45 +1,9 @@
 @import "tailwindcss";
 
+html {
+  overflow-y: scroll; /* reserve scrollbar width to prevent layout jumps */
+}
+
 [v-cloak] {
   display: none;
 }
-
-/* Prompt toggle */
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  font-size: 1rem;
-  font-weight: 500;
-}
-.toggle-checkbox {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-.toggle-slider {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  background: #0a0a0a;
-  border-radius: 24px;
-  transition: background 0.3s;
-  cursor: pointer;
-}
-.toggle-slider:before {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 20px;
-  height: 20px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.3s;
-}
-.toggle-checkbox:checked + .toggle-slider:before {
-  transform: translateX(20px);
-}
-
