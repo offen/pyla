@@ -24,9 +24,7 @@ export default {
       tokenInput: '',
       loading: false,
       executing: false,
-      // --- TEMP ---------------------------
-      _generateMode: 'augmented',
-      // --- TEMP ---------------------------
+      mode: 'fair',
     }, this.parseUrlState())
   },
   computed: {
@@ -59,15 +57,13 @@ export default {
         ? `${this.token.substr(0, 3)}...${this.token.slice(-3)}`
         : null
     },
-    // --- TEMP ---------------------------
-    generateModeOptions() {
-      return [{ value: 'fair', label: 'Fair use' }, { value: 'connected', label: 'Connected model' }, { value: 'augmented', label: 'Augmented prompt' }]
-    },
-    generateMode: {
-      get() { return this._generateMode || 'augmented' },
-      set(v) { this._generateMode = v }
+    availableModes() {
+      return [
+        { value: 'fair', label: 'Fair use' },
+        { value: 'connected', label: 'Connected model' },
+        { value: 'augmented', label: 'Augmented prompt' }
+      ]
     }
-    // --- TEMP ---------------------------
   },
   watch: {
     title: {
@@ -141,7 +137,9 @@ export default {
       await navigator.clipboard.writeText(this.augmentedPrompt)
     },
     async remotePrompt() {
-      const remoteModel = new RemoteModel(this.token)
+      const remoteModel = this.mode === 'fair'
+        ? new RemoteModel()
+        : new RemoteModel(this.token)
       this.runtimeError = null
       this.loading = true
       try {
@@ -153,9 +151,6 @@ export default {
         this.loading = false
       }
     },
-    // --- TEMP ---------------------------
-    handleFairUseClick() {},
-    // --- TEMP ---------------------------
     parseMetadata(script) {
       const REGEX = /^# \/\/\/ ([a-zA-Z0-9-]+)$(?:\r?\n|\r)((?:^#(?: |.*)?$(?:\r?\n|\r))+)^# \/\/\/$/mg
 
@@ -296,35 +291,35 @@ export default {
         v-model="prompt" />
     </div>
 
-    <!-- GENERATE SCRIPT -->  
+    <!-- GENERATE SCRIPT -->
     <div class="order-5 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <div class="flex flex-col">
 
-        <!-- labels -->  
+        <!-- labels -->
         <div class="flex flex-wrap gap-2">
-          <label v-for="option in generateModeOptions" :key="option.value"
+          <label v-for="option in availableModes" :key="option.value"
             class="rounded-t-lg px-4 py-2 cursor-pointer transition-colors text-neutral-950"
-            :class="generateMode === option.value ? 'bg-neutral-200' : 'bg-neutral-300'">
-            <input type="radio" class="sr-only" :value="option.value" v-model="generateMode">
+            :class="mode === option.value ? 'bg-neutral-200' : 'bg-neutral-300'">
+            <input type="radio" class="sr-only" :value="option.value" v-model="mode">
             <span class="flex items-center gap-2 my-1">
               <span class="flex h-4 w-4 items-center justify-center rounded-full outline outline-2 outline-neutral-950"
-                :class="generateMode === option.value ? 'bg-neutral-200' : 'bg-neutral-300'">
-                <span v-if="generateMode === option.value" class="h-2 w-2 rounded-full bg-neutral-950"></span>
+                :class="mode === option.value ? 'bg-neutral-200' : 'bg-neutral-300'">
+                <span v-if="mode === option.value" class="h-2 w-2 rounded-full bg-neutral-950"></span>
               </span>
               <span class="text-sm font-medium">{{ option.label }}</span>
             </span>
           </label>
         </div>
 
-        <!-- cards -->  
+        <!-- cards -->
         <div class="rounded-lg rounded-tl-none bg-neutral-200 p-4">
 
-          <template v-if="generateMode === 'fair'">
+          <template v-if="mode === 'fair'">
             <p class="text-neutral-700 mt-2">
               We're offering limited free access to OpenAI GPT-4.1 for all test users.
             </p>
             <div class="w-full flex flex-row items-center justify-center mt-6">
-              <Button type="fill" @click="handleFairUseClick" :disabled="loading">
+              <Button type="fill" @click="remotePrompt" :disabled="loading">
                 Generate script
               </Button>
               <span
@@ -343,7 +338,7 @@ export default {
             </div>
           </template>
 
-          <template v-else-if="generateMode === 'connected'">
+          <template v-else-if="mode === 'connected'">
             <div class="flex flex-col items-center">
               <div class="w-full flex flex-row items-center justify-center">
                 <input v-model="tokenInput" type="text" :disabled="token"
@@ -392,7 +387,7 @@ export default {
       </div>
     </div>
 
-    <!-- ERROR --> 
+    <!-- ERROR -->
     <div v-if="globalError" class="order-6 col-span-2 md:col-start-1 md:col-span-4 lg:col-start-2 lg:col-span-6">
       <div class="bg-neutral-200 rounded-lg p-4 text-red-700">
         <p class="font-mono break-words">
@@ -414,15 +409,15 @@ export default {
         </div>
       </div>
     </div>
-    
-    <!-- RUN SCRIPT -->  
+
+    <!-- RUN SCRIPT -->
     <div class="order-8 col-span-2 md:col-span-4 lg:col-span-8 mt-8">
 
       <div class="bg-neutral-200 rounded-lg p-4">
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           <div class="col-span-2 md:col-span-4 lg:col-span-8">
             <TextArea type="dark"
-              :placeholder="generateMode === 'augmented' ? 'Paste script from LLM ...' : 'Script goes here ...'"
+              :placeholder="mode=== 'augmented' ? 'Paste script from LLM ...' : 'Script goes here ...'"
               v-model="script" />
           </div>
         </div>
@@ -448,7 +443,7 @@ export default {
       </div>
     </div>
 
-    <!-- OUTPUT -->  
+    <!-- OUTPUT -->
     <div class="order-9 col-span-2 md:col-span-4 lg:col-span-8">
       <div class="rounded-lg p-3 bg-neutral-200 text-neutral-500">
         <pre v-if="output.length" class="break-all whitespace-pre-wrap">{{ output.join('\n') }}</pre>
