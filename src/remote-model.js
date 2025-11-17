@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 const FAIR_USE_TOKEN = 'pyla-fair-use'
 
 export default class RemoteModel {
-  constructor(token = FAIR_USE_TOKEN, model = 'openai/gpt-4.1-mini') {
+  constructor(token = FAIR_USE_TOKEN, model = 'openai/gpt-4.1') {
     this.client = new OpenAI({
       baseURL: `${window.location.origin}/inference`,
       apiKey: token,
