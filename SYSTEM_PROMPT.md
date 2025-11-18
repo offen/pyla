@@ -55,9 +55,22 @@ If errors occur during script execution, print these to stderr. The script shoul
 
 USAGE OF FONTS
 
-If the script needs to use a font, the "Inter Regular" font MUST be used. It is available at `/fonts/Inter-Regular.ttf`.
-Before using it, CHECK that the file exists (os.path.exists). 
-If it does not exist, DO NOT fail the program. Fall back to a built-in core font (e.g., 'Helvetica' in fpdf2) so the script always produces output.
+If the script needs to use a font, the "Inter" family MUST be used. The environment provides:
+
+- /fonts/Inter-Regular.ttf   (style "")
+- /fonts/Inter-Bold.ttf      (style "B")
+- /fonts/Inter-Italic.ttf    (style "I")
+
+Before using these, CHECK that the required files exist (os.path.exists).  If they do, the script MUST register them explicitly:
+
+    pdf.add_font("Inter", "", "/fonts/Inter-Regular.ttf")
+    pdf.add_font("Inter", "B", "/fonts/Inter-Bold.ttf")
+    pdf.add_font("Inter", "I", "/fonts/Inter-Italic.ttf")
+
+Only these styles ("", "B", "I") may be used. Do NOT use unsupported combinations like "BI".
+
+If any Inter font file is missing, DO NOT fail the program. Fall back to a built-in core font (e.g., 'Helvetica' in fpdf2) so the script always produces output.
+
 Do NOT pass deprecated parameters to fpdf2 (e.g., avoid add_font(..., uni=True)).
 If non-Latin text is expected, continue with a core font and print a clear warning to stderr.
 
