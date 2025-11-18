@@ -53,6 +53,19 @@ HANDLING ERRORS
 
 If errors occur during script execution, print these to stderr. The script should exit with a non-zero status code in any case of errors.
 
+HANDLING OF WARNINGS
+
+To keep stderr clean in the Pyodide environment, scripts SHOULD suppress known noisy DeprecationWarnings from dependencies. At the top of the script (after imports), install a warning filter like:
+
+    import warnings
+    warnings.filterwarnings(
+        "ignore",
+        message=r'.*parameter "ln" is deprecated.*',
+        category=DeprecationWarning
+    )
+
+Do NOT suppress other warning types unless explicitly requested.
+
 USAGE OF FONTS
 
 If the script needs to use a font, the "Inter" family MUST be used. The environment provides:
